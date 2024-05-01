@@ -8,12 +8,14 @@
 //プレイシーン初期化
 void ScenePlay::Init()
 {
+	bg.Init(BackGroundKind::NONE);
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
 //プレイシーン通常処理
 void ScenePlay::Step()
 {
+	bg.Step();
 	if (Input::PressAnyKey())
 	{
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
@@ -23,12 +25,13 @@ void ScenePlay::Step()
 //プレイシーン描画処理
 void ScenePlay::Draw()
 {
-
+	bg.Draw();
 }
 
 //プレイシーン後処理
 //リトライかどうかを返す
 void ScenePlay::Fin()
 {
+	bg.Fin();
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }
