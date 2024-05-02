@@ -1,27 +1,21 @@
 #pragma once
 #include "../../Common.h"
-
-constexpr int MAPCHIP_SIZE = 32;
-
-constexpr int MAPCHIP_NUM_X = SCREEN_SIZE_X / MAPCHIP_SIZE;
-constexpr int MAPCHIP_NUM_Y = SCREEN_SIZE_Y / MAPCHIP_SIZE;
-
-enum class MAPCHIP_KIND
-{
-	Air,
-
-	KindNum
-};
-
-typedef MAPCHIP_KIND MapData[MAPCHIP_NUM_Y][MAPCHIP_NUM_X];
+#include "MapData.h"
+#include "../Gimmick/Gimmick.h"
 
 class Map
 {
 private:
+	int mapImage[(int)MAPCHIP_KIND::KindNum];
 	MapData data;
+	
+	const int gimmick_Num;
+	GimmickID* gimmickID;
+	GimmickBase** gimmick;
 
 public:
-	Map();
+	Map(int AllGimmickNum);
+	~Map();
 
 	void Init();
 	void Step();
