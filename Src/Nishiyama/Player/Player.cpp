@@ -1,12 +1,11 @@
-/*
-#include "../Scene.h"
 #include "Player.h"
+#include "../Scene/Scene.h"
 #include "../Input/Input.h"
-#include "../Collision/Collision.h"
-#include "../Common.h"
+#include "../../Common.h"
+
 
 //初期化
-void PLAYER::Init()
+void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	flameCount = 0;
@@ -21,30 +20,16 @@ void PLAYER::Init()
 	Gravity = 0.5f;
 	JunpCount = 0;
 
-	player1.dir = IsLeft;
-	player1.IsDush = false;
-	player1.IsReturn = true;
-	player1.Pos = { 32.0f, 32.0f, 0.0f };
-	player1.YSpeed = 0.5f;
-	player1.Gravity = 0.5f;
-	player1.JunpCount = 0;
-
-	player2.dir = IsRight;
-	player2.IsDush = false;
-	player2.IsReturn = false;
-	player2.Pos = { 1248.0f, 32.0f, 0.0f };
-	player2.YSpeed = 0.5f;
-	player2.Gravity = 0.5f;
-	player2.JunpCount = 0;
+	IsJump = false;
 }
 
 //画像読み込み
 void PLAYER::Load()
 {
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.Player1Hndl);
-	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);
+	/*LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);*/
 
-	g_CurrentSceneID = SCENE_ID_LOOP_PLAY;
+	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
 //通常処理
@@ -57,10 +42,16 @@ void PLAYER::Step()
 	Move();
 	//移動アニメ切り替え処理
 	DushAnime();
+	//ジャンプアニメ切り替え処理
+	if (IsJump)
+	{
+		JumpAnime();
+	}
 
 	//ジャンプ処理
-	if (IsKeyPush(KEY_INPUT_SPACE))
+	if (Input::IsKeyPush(KEY_INPUT_SPACE))
 	{
+		IsJump = true;
 		Jump();
 	}
 	Pos.y += YSpeed;
@@ -82,7 +73,7 @@ void PLAYER::Draw()
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
-	DrawBox(Pos.x - 32, Pos.y - 32, Pos.x + 32, Pos.y + 32, GetColor(255, 0, 0), false);
+	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
 }
 
 //後処理
@@ -121,7 +112,7 @@ void PLAYER::LimitX_Y()
 //移動処理
 void PLAYER::Move()
 {
-	if (IsKeyKeep(KEY_INPUT_D))
+	if (Input::IsKeyKeep(KEY_INPUT_D))
 	{
 		dir = IsLeft;
 		IsDush = true;
@@ -129,7 +120,7 @@ void PLAYER::Move()
 		Pos.x += SPEED;
 
 	}
-	else if (IsKeyKeep(KEY_INPUT_A))
+	else if (Input::IsKeyKeep(KEY_INPUT_A))
 	{
 		dir = IsRight;
 		IsDush = true;
@@ -155,7 +146,7 @@ void PLAYER::Jump()
 //ダッシュアニメ
 void PLAYER::DushAnime()
 {
-	if (IsDush == true)
+	if (IsDush == true && IsJump == false)
 	{
 		if (flameCount % 4 == 0)
 		{
@@ -165,6 +156,20 @@ void PLAYER::DushAnime()
 				AnimeNum = 0;
 			}
 		}
+	}
+}
+
+void PLAYER::JumpAnime()
+{
+	//降下中
+	if (YSpeed > 0.0f)
+	{
+		AnimeNum = 7;
+	}
+	//上昇中
+	else if (YSpeed < 0.0f)
+	{
+		AnimeNum = 6;
 	}
 }
 
@@ -204,8 +209,6 @@ void PLAYER::PulsY(int PosY, float Height)
 		float puls = 0.0f;
 		puls = (PosY + Height) - (Pos.y - 32.0f);
 		Pos.y += puls;
-		YSpeed = 0.0f;
+		YSpeed = -0.5f;
 	}
 }
-
-*/
