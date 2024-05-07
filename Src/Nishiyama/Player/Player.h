@@ -1,10 +1,10 @@
-/*
+
 #pragma once
 #include <DxLib.h>
 
 
-#define PLAYER1_PATH		"Data/Img/Player1.png"
-#define PLAYER2_PATH		"Data/Img/Player2.png"
+#define PLAYER1_PATH		"Data/Image/Player/Player1.png"
+#define PLAYER2_PATH		"Data/Image/Player/Player2.png"
 
 #define PLAYER_ANIME_NUM	(18)
 
@@ -73,4 +73,3 @@ public:
 	void PulsY(int PosY, float Height);
 };
 
-*/

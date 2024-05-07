@@ -1,9 +1,8 @@
-/*
-#include "../Scene.h"
 #include "Player.h"
+#include "../Scene/Scene.h"
 #include "../Input/Input.h"
-#include "../Collision/Collision.h"
-#include "../Common.h"
+#include "../../Common.h"
+
 
 //初期化
 void PLAYER::Init()
@@ -30,7 +29,7 @@ void PLAYER::Load()
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.Player1Hndl);
 	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);
 
-	g_CurrentSceneID = SCENE_ID_LOOP_PLAY;
+	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
 //通常処理
@@ -45,7 +44,7 @@ void PLAYER::Step()
 	DushAnime();
 
 	//ジャンプ処理
-	if (IsKeyPush(KEY_INPUT_SPACE))
+	if (Input::IsKeyPush(KEY_INPUT_SPACE))
 	{
 		Jump();
 	}
@@ -68,7 +67,7 @@ void PLAYER::Draw()
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
-	DrawBox(Pos.x - 32, Pos.y - 32, Pos.x + 32, Pos.y + 32, GetColor(255, 0, 0), false);
+	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
 }
 
 //後処理
@@ -107,7 +106,7 @@ void PLAYER::LimitX_Y()
 //移動処理
 void PLAYER::Move()
 {
-	if (IsKeyKeep(KEY_INPUT_D))
+	if (Input::IsKeyKeep(KEY_INPUT_D))
 	{
 		dir = IsLeft;
 		IsDush = true;
@@ -115,7 +114,7 @@ void PLAYER::Move()
 		Pos.x += SPEED;
 
 	}
-	else if (IsKeyKeep(KEY_INPUT_A))
+	else if (Input::IsKeyKeep(KEY_INPUT_A))
 	{
 		dir = IsRight;
 		IsDush = true;
@@ -193,5 +192,3 @@ void PLAYER::PulsY(int PosY, float Height)
 		YSpeed = 0.0f;
 	}
 }
-
-*/
