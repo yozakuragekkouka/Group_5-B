@@ -7,6 +7,13 @@
 void SceneTitle::Init()
 {
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_TITLE;
+
+	Title_Hndl = LoadGraph(TITLE_PATH);
+
+	Playbutton_Hndl = LoadGraph(BUTTON_PATH);
+
+	button_x = 440;
+	button_y = 400;
 }
 
 //タイトル通常処理
@@ -21,6 +28,8 @@ void SceneTitle::Step()
 //タイトル描画処理
 void SceneTitle::Draw()
 {
+	DrawGraph(0, 0, Title_Hndl, true);
+	DrawGraph(button_x, button_y, Playbutton_Hndl, true);
 }
 
 //タイトル後処理
