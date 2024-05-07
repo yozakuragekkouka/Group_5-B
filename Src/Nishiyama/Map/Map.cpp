@@ -10,6 +10,7 @@ Map::Map(int AllGimmickNum):gimmick_Num(AllGimmickNum)
 
 	memset(&data, 0, sizeof(MapData));
 
+	gimmickID = nullptr;
 	gimmick = nullptr;
 }
 

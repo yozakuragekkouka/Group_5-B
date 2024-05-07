@@ -169,6 +169,47 @@ void Input::Mouse_Disappear()
 	SetMouseDispFlag(false);
 }
 
+bool Input::Mouse_Click()
+{
+	if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
+	{
+		//‰Ÿ‚³‚ê‚Ä‚¢‚é
+		if (mouse_flag == false)
+		{
+			//‰Ÿ‚³‚ê‚Â‚Ã‚¯‚Ä‚¢‚È‚¢
+			mouse_flag = true;
+			return true;
+		}
+		return false;
+	}
+	else
+	{
+		//‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢
+		mouse_flag = false;
+		return false;
+	}
+}
+
+bool Input::Mouse_Release()
+{
+	if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
+	{
+		//‰Ÿ‚³‚ê‚Ä‚¢‚é
+		return false;
+	}
+	else
+	{
+		//‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢
+		if (mouse_flag == true)
+		{
+			//‰Ÿ‚³‚ê‚Â‚Ã‚¯‚Ä‚¢‚½
+			mouse_flag = false;
+			return true;
+		}
+		return false;
+	}
+}
+
 bool Input::Mouse_on_the_Rect(Rect_Data& rect, float ExRate)
 {
 	VECTOR r_pos = rect.Get_pos();

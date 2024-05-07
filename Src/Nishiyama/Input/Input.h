@@ -50,6 +50,9 @@ public:
 
 	static void Mouse_Disappear();
 
+	static bool Mouse_Click();
+	static bool Mouse_Release();
+
 	static bool Mouse_on_the_Rect(Rect_Data& rect, float ExRate);
 
 	static bool Mouse_on_the_Rect_Center(Rect_Data& rect, float ExRate);

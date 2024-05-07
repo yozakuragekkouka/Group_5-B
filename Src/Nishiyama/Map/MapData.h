@@ -8,6 +8,16 @@ constexpr int MAPCHIP_OVER = 2;
 constexpr int MAPCHIP_NUM_X = SCREEN_SIZE_X / MAPCHIP_SIZE + MAPCHIP_OVER * 2;
 constexpr int MAPCHIP_NUM_Y = SCREEN_SIZE_Y / MAPCHIP_SIZE + MAPCHIP_OVER * 2;
 
+constexpr char ORIGINAL_MAP_PATH[5][128] =
+{
+	"aaaaa",
+};
+
+constexpr char EDIT_MAP_PATH[5][128] =
+{
+	"aaaaa",
+};
+
 enum class MAPCHIP_KIND
 {
 	Air,
@@ -31,9 +41,8 @@ typedef MAPCHIP_KIND MapData[MAPCHIP_NUM_Y][MAPCHIP_NUM_X];
 
 class MapOperation
 {
-private:
-	
 public:
 	static void LoadMap(MapData &chipData, int &gimmickNum, GimmickID *gimmickID);
 
+	static void SaveMap(MapData &chipData, int &gimmickNum, GimmickID *gimmickID);
 };

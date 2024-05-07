@@ -1,5 +1,6 @@
 #pragma once
 #include "DxLib.h"
+#include "../Map/MapData.h"
 
 class GimmickBase
 {
@@ -13,6 +14,9 @@ protected:
 	VECTOR pos;
 
 public:
+	GimmickBase();
+	GimmickBase(int dataX, int dataY);
+
 	virtual void Init() = 0;
 	virtual void Step() = 0;
 	virtual void Draw() = 0;

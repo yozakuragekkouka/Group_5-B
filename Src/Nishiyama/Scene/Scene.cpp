@@ -3,6 +3,7 @@
 #include "SceneTitle.h"
 #include "ScenePlay.h"
 #include "SceneResult.h"
+#include "SceneEditor.h"
 
 SCENEID SceneManager::SceneManager::g_CurrenySceneID;	//現在のシーンID
 
@@ -119,6 +120,33 @@ bool SceneManager::SceneLoop()
 	}
 	break;
 	//SCENE_RESULT終わり
+
+	case SCENEID::SCENE_ID_INIT_EDITOR:
+	{
+		scene = new SceneEditor;
+		scene->Init();
+	}
+	break;
+	case SCENEID::SCENE_ID_LOOP_EDITOR:
+	{
+		if (scene)
+		{
+			scene->Step();
+			scene->Draw();
+		}
+	}
+	break;
+	case SCENEID::SCENE_ID_FIN_EDITOR:
+	{
+		if (scene)
+		{
+			scene->Fin();
+			delete scene;
+			scene = nullptr;
+		}
+	}
+	break;
+	//SCENE_EDITOR終わり
 
 	}//シーン振り分け
 	return false;

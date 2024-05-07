@@ -19,6 +19,11 @@ SCENE_ID_FIN_PLAY,			//後処理シーンのID
 SCENE_ID_INIT_RESULT = 300,		//初期化シーンのID
 SCENE_ID_LOOP_RESULT,			//繰り返しシーンのID
 SCENE_ID_FIN_RESULT,			//後処理シーンのID
+
+//エディターシーンのID
+SCENE_ID_INIT_EDITOR = 400,		//初期化シーンのID
+SCENE_ID_LOOP_EDITOR,			//繰り返しシーンのID
+SCENE_ID_FIN_EDITOR,			//後処理シーンのID
 };
 
 class SceneBase
