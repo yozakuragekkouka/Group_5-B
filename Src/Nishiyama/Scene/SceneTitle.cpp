@@ -46,7 +46,7 @@ void SceneTitle::Draw()
 	DrawGraph(0, 0, Title_Hndl, true);
 	DrawGraph(button_x, button_y, Playbutton_Hndl, true);
 
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "%d", PlayNumber);
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤーの人数：%d", PlayNumber);
 }
 
 //タイトル後処理

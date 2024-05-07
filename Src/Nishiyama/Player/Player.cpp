@@ -5,7 +5,7 @@
 
 
 //初期化
-void PLAYER::Init()
+void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	flameCount = 0;
@@ -20,14 +20,14 @@ void PLAYER::Init()
 	Gravity = 0.5f;
 	JunpCount = 0;
 
-	
+	IsJump = false;
 }
 
 //画像読み込み
 void PLAYER::Load()
 {
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.Player1Hndl);
-	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);
+	/*LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);*/
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
@@ -42,10 +42,16 @@ void PLAYER::Step()
 	Move();
 	//移動アニメ切り替え処理
 	DushAnime();
+	//ジャンプアニメ切り替え処理
+	if (IsJump)
+	{
+		JumpAnime();
+	}
 
 	//ジャンプ処理
 	if (Input::IsKeyPush(KEY_INPUT_SPACE))
 	{
+		IsJump = true;
 		Jump();
 	}
 	Pos.y += YSpeed;
@@ -140,7 +146,7 @@ void PLAYER::Jump()
 //ダッシュアニメ
 void PLAYER::DushAnime()
 {
-	if (IsDush == true)
+	if (IsDush == true && IsJump == false)
 	{
 		if (flameCount % 4 == 0)
 		{
@@ -150,6 +156,20 @@ void PLAYER::DushAnime()
 				AnimeNum = 0;
 			}
 		}
+	}
+}
+
+void PLAYER::JumpAnime()
+{
+	//降下中
+	if (YSpeed > 0.0f)
+	{
+		AnimeNum = 7;
+	}
+	//上昇中
+	else if (YSpeed < 0.0f)
+	{
+		AnimeNum = 6;
 	}
 }
 
@@ -189,6 +209,6 @@ void PLAYER::PulsY(int PosY, float Height)
 		float puls = 0.0f;
 		puls = (PosY + Height) - (Pos.y - 32.0f);
 		Pos.y += puls;
-		YSpeed = 0.0f;
+		YSpeed = -0.5f;
 	}
 }
