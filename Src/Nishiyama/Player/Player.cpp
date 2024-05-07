@@ -21,21 +21,7 @@ void PLAYER::Init()
 	Gravity = 0.5f;
 	JunpCount = 0;
 
-	player1.dir = IsLeft;
-	player1.IsDush = false;
-	player1.IsReturn = true;
-	player1.Pos = { 32.0f, 32.0f, 0.0f };
-	player1.YSpeed = 0.5f;
-	player1.Gravity = 0.5f;
-	player1.JunpCount = 0;
-
-	player2.dir = IsRight;
-	player2.IsDush = false;
-	player2.IsReturn = false;
-	player2.Pos = { 1248.0f, 32.0f, 0.0f };
-	player2.YSpeed = 0.5f;
-	player2.Gravity = 0.5f;
-	player2.JunpCount = 0;
+	
 }
 
 //‰æ‘œ“Ç‚İ‚İ

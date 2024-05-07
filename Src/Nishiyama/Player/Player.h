@@ -20,15 +20,7 @@ struct Hundle
 	int Player2Hndl[PLAYER_ANIME_NUM];
 };
 
-struct Player1
-{
 
-};
-
-struct Player2
-{
-
-};
 
 enum DIR
 {
@@ -40,8 +32,6 @@ class PLAYER
 {
 private:
 	Hundle hundl;
-	Player1 player1;
-	Player2 player2;
 
 	DIR dir;
 	bool IsDush;
