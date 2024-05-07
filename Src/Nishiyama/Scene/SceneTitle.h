@@ -22,3 +22,5 @@ public:
 
 	void Fin();
 };
+
+extern int PlayNumber;
