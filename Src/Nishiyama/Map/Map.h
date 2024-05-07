@@ -1,5 +1,4 @@
 #pragma once
-#include "../../Common.h"
 #include "MapData.h"
 #include "../Gimmick/Gimmick.h"
 

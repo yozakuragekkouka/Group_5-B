@@ -1,13 +1,6 @@
 #pragma once
 #include "DxLib.h"
 
-enum class GimmickID
-{
-	NONE,
-
-	KIND_NUM
-};
-
 class GimmickBase
 {
 protected:

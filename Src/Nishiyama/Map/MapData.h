@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Common.h"
 
 constexpr int MAPCHIP_SIZE = 32;
 
@@ -14,9 +15,25 @@ enum class MAPCHIP_KIND
 	KindNum
 };
 
+enum class GimmickID
+{
+	NONE,
+
+	KIND_NUM
+};
+
 constexpr char MAPCHIP_PATH[(int)MAPCHIP_KIND::KindNum][128] =
 {
 	"",
 };
 
 typedef MAPCHIP_KIND MapData[MAPCHIP_NUM_Y][MAPCHIP_NUM_X];
+
+class MapOperation
+{
+private:
+	
+public:
+	static void LoadMap(MapData &chipData, int &gimmickNum, GimmickID *gimmickID);
+
+};
