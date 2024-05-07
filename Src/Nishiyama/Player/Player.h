@@ -1,10 +1,10 @@
-/*
+
 #pragma once
 #include <DxLib.h>
 
 
-#define PLAYER1_PATH		"Data/Img/Player1.png"
-#define PLAYER2_PATH		"Data/Img/Player2.png"
+#define PLAYER1_PATH		"Data/Image/Player/Player1.png"
+#define PLAYER2_PATH		"Data/Image/Player/Player2.png"
 
 #define PLAYER_ANIME_NUM	(18)
 
@@ -20,15 +20,7 @@ struct Hundle
 	int Player2Hndl[PLAYER_ANIME_NUM];
 };
 
-struct Player1
-{
 
-};
-
-struct Player2
-{
-
-};
 
 enum DIR
 {
@@ -40,8 +32,6 @@ class PLAYER
 {
 private:
 	Hundle hundl;
-	Player1 player1;
-	Player2 player2;
 
 	DIR dir;
 	bool IsDush;
@@ -83,4 +73,3 @@ public:
 	void PulsY(int PosY, float Height);
 };
 
-*/
