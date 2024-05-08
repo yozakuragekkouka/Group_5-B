@@ -7,7 +7,7 @@ class ScenePlay : public SceneBase
 {
 private:
 	BackGround bg;
-	PLAYER player;
+	PLAYER *player;
 
 public:
 	void Init();

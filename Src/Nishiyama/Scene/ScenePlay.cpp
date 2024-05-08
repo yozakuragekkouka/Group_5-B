@@ -10,8 +10,11 @@
 void ScenePlay::Init()
 {
 	bg.Init(BackGroundKind::NONE);
-	player.Init(PlayNumber);
-	player.Load();
+	player[0].Init(1);
+	player[1].Init(2);
+	player[0].Load();
+	player[1].Load();
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
@@ -19,7 +22,8 @@ void ScenePlay::Init()
 void ScenePlay::Step()
 {
 	bg.Step();
-	player.Step();
+	player[0].Step();
+	player[1].Step();
 	if (Input::IsKeyPush(KEY_INPUT_RETURN))
 	{
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
@@ -30,7 +34,8 @@ void ScenePlay::Step()
 void ScenePlay::Draw()
 {
 	bg.Draw();
-	player.Draw();
+	player[0].Draw();
+	player[1].Draw();
 }
 
 //プレイシーン後処理
@@ -38,6 +43,11 @@ void ScenePlay::Draw()
 void ScenePlay::Fin()
 {
 	bg.Fin();
-	player.Delete();
+	player[0].Delete();
+	player[1].Delete();
+
+	delete[]player;
+	player = nullptr;
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }

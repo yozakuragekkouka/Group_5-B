@@ -4,7 +4,7 @@
 
 
 #define PLAYER1_PATH		"Data/Image/Player/Player1.png"
-//#define PLAYER2_PATH		"Data/Image/Player/Player2.png"
+#define PLAYER2_PATH		"Data/Image/Player/Player2.png"
 
 #define PLAYER_ANIME_NUM	(18)
 
@@ -18,34 +18,53 @@ struct Hundle
 {
 	int Player1Hndl[PLAYER_ANIME_NUM];
 	int Player2Hndl[PLAYER_ANIME_NUM];
+	int PlayerHndl[2][PLAYER_ANIME_NUM];
 };
 
+//方向
 enum DIR
 {
 	IsLeft,
 	IsRight,
 };
 
+//プレイヤーの状態
+enum ACTIONSTATE
+{
+	State_Normal,
+	State_Dush,
+	Stete_Jump,
+};
+
 class PLAYER
 {
-private:
+protected:
+	//描画に使う変数
 	Hundle hundl;
-
-	DIR dir;
-	bool IsDush;
 	int AnimeNum;
 
+	//方向を決める変数
+	DIR dir;
 	VECTOR Pos;
 	VECTOR OldPos;
+
+	ACTIONSTATE ActionStateID;
+
+
+	//ジャンプに使う変数
 	float YSpeed;
 	float Gravity;
 	int JunpCount;
 
+	//判定フラグ
+	bool IsDush;
 	bool IsReturn;
 	bool IsJump;
 
 	int flameCount;
 
+	//アクションボタン
+	int ActionButton[3];
 
 public:
 

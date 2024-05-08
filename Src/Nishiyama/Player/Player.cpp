@@ -9,8 +9,45 @@ void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	flameCount = 0;
-
 	AnimeNum = 0;
+
+	//playernumは遊ぶ人数で変える
+
+	//プレイヤー1の初期化
+	if (playerNumber == 1)
+	{
+		dir = IsRight;
+		ActionStateID = State_Normal;
+
+		Pos = { 32.0f, 500.0f, 0.0f };
+		
+
+		IsJump = false;
+		IsDush = false;
+		IsReturn = true;
+
+		
+		ActionButton[0] = KEY_INPUT_W;		//ジャンプ
+		ActionButton[1] = KEY_INPUT_A;		//左移動
+		ActionButton[2] = KEY_INPUT_D;		//右移動
+	}
+	else
+	{
+		dir = IsLeft;
+		ActionStateID = State_Normal;
+
+
+		Pos = { 1248.0f, 500.0f, 0.0f };
+		
+
+		IsJump = false;
+		IsDush = false;
+		IsReturn = false;
+
+		ActionButton[0] = KEY_INPUT_U;		//ジャンプ
+		ActionButton[1] = KEY_INPUT_H;		//左移動
+		ActionButton[2] = KEY_INPUT_K;		//右移動
+	}
 
 	dir = IsLeft;
 	IsDush = false;
@@ -28,6 +65,10 @@ void PLAYER::Load()
 {
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.Player1Hndl);
 	/*LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);*/
+
+
+	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.PlayerHndl[0]);
+	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.PlayerHndl[1]);
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
@@ -49,7 +90,7 @@ void PLAYER::Step()
 	}
 
 	//ジャンプ処理
-	if (Input::IsKeyPush(KEY_INPUT_SPACE))
+	if (Input::IsKeyPush(ActionButton[0]))
 	{
 		IsJump = true;
 		Jump();
@@ -67,7 +108,7 @@ void PLAYER::Draw()
 {
 	//プレイヤーの描画
 	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.Player1Hndl[AnimeNum], true, IsReturn, false);
-
+	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[dir][AnimeNum], true, IsReturn, false);
 	
 	//デバック
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
@@ -112,7 +153,7 @@ void PLAYER::LimitX_Y()
 //移動処理
 void PLAYER::Move()
 {
-	if (Input::IsKeyKeep(KEY_INPUT_D))
+	if (Input::IsKeyKeep(ActionButton[2]))
 	{
 		dir = IsLeft;
 		IsDush = true;
@@ -120,7 +161,7 @@ void PLAYER::Move()
 		Pos.x += SPEED;
 
 	}
-	else if (Input::IsKeyKeep(KEY_INPUT_A))
+	else if (Input::IsKeyKeep(ActionButton[1]))
 	{
 		dir = IsRight;
 		IsDush = true;
