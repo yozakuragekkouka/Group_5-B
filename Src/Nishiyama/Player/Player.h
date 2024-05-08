@@ -92,5 +92,8 @@ public:
 	void PulsX(int PosX, float Width);
 	//当たり判定(Y方向)
 	void PulsY(int PosY, float Height);
+
+	//アニメーション切り替え処理
+	void PlayerAnimetion();
 };
 

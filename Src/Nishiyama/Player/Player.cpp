@@ -9,29 +9,31 @@ void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	flameCount = 0;
-	AnimeNum = 0;
+	AnimeNum = 15;
 
 	//playernumは遊ぶ人数で変える
 
 	//プレイヤー1の初期化
-	if (playerNumber == 1)
-	{
-		dir = IsRight;
-		ActionStateID = State_Normal;
+	dir = IsRight;
+	ActionStateID = State_Normal;
 
-		Pos = { 32.0f, 500.0f, 0.0f };
-		
+	Pos = { 32.0f, 500.0f, 0.0f };
 
-		IsJump = false;
-		IsDush = false;
-		IsReturn = true;
 
-		
-		ActionButton[0] = KEY_INPUT_W;		//ジャンプ
-		ActionButton[1] = KEY_INPUT_A;		//左移動
-		ActionButton[2] = KEY_INPUT_D;		//右移動
-	}
-	else
+	IsJump = false;
+	IsDush = false;
+	IsReturn = true;
+
+	YSpeed = 0.0f;
+	Gravity = 0.5f;
+	JunpCount = 0;
+
+
+	ActionButton[0] = KEY_INPUT_W;		//ジャンプ
+	ActionButton[1] = KEY_INPUT_A;		//左移動
+	ActionButton[2] = KEY_INPUT_D;		//右移動
+	
+	if(playerNumber == 2)
 	{
 		dir = IsLeft;
 		ActionStateID = State_Normal;
@@ -49,24 +51,12 @@ void PLAYER::Init(int playerNumber)
 		ActionButton[2] = KEY_INPUT_K;		//右移動
 	}
 
-	dir = IsLeft;
-	IsDush = false;
-	IsReturn = true;
-	Pos = { 32.0f, 0.0f, 0.0f };
-	YSpeed = 0.0f;
-	Gravity = 0.5f;
-	JunpCount = 0;
-
-	IsJump = false;
+	OldPos = { 0.0f, 0.0f, 0.0f };
 }
 
 //画像読み込み
 void PLAYER::Load()
 {
-	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.Player1Hndl);
-	/*LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.Player2Hndl);*/
-
-
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.PlayerHndl[0]);
 	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.PlayerHndl[1]);
 
@@ -76,8 +66,8 @@ void PLAYER::Load()
 //通常処理
 void PLAYER::Step()
 {
-
 	flameCount++;
+	OldPos = Pos;
 
 	//移動処理
 	Move();
@@ -92,7 +82,7 @@ void PLAYER::Step()
 	//ジャンプ処理
 	if (Input::IsKeyPush(ActionButton[0]))
 	{
-		IsJump = true;
+		ActionStateID = Stete_Jump;
 		Jump();
 	}
 	Pos.y += YSpeed;
@@ -106,9 +96,12 @@ void PLAYER::Step()
 //描画処理
 void PLAYER::Draw()
 {
+	//プレイヤーアニメ切り替え
+	//PlayerAnimetion();
+
 	//プレイヤーの描画
-	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.Player1Hndl[AnimeNum], true, IsReturn, false);
 	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[dir][AnimeNum], true, IsReturn, false);
+	
 	
 	//デバック
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
@@ -120,7 +113,7 @@ void PLAYER::Draw()
 //後処理
 void PLAYER::Delete()
 {
-	memset(&hundl, -1, sizeof(Hundle));
+	
 }
 
 //移動制限
@@ -155,16 +148,15 @@ void PLAYER::Move()
 {
 	if (Input::IsKeyKeep(ActionButton[2]))
 	{
+		ActionStateID = State_Dush;
 		dir = IsLeft;
-		IsDush = true;
 		IsReturn = true;
 		Pos.x += SPEED;
-
 	}
 	else if (Input::IsKeyKeep(ActionButton[1]))
-	{
+	{	
+		ActionStateID = State_Dush;
 		dir = IsRight;
-		IsDush = true;
 		IsReturn = false;
 		Pos.x -= SPEED;
 	}
@@ -251,5 +243,59 @@ void PLAYER::PulsY(int PosY, float Height)
 		puls = (PosY + Height) - (Pos.y - 32.0f);
 		Pos.y += puls;
 		YSpeed = -0.5f;
+	}
+}
+
+
+//アニメーション切り替え処理
+void PLAYER::PlayerAnimetion()
+{
+	switch (ActionStateID)
+	{
+	case State_Normal:
+		
+		//待機モーション
+		if (flameCount % 4 == 0)
+		{
+			AnimeNum++;
+			if (AnimeNum > 17)
+			{
+				AnimeNum = 15;
+			}
+		}
+		
+		break;
+	case State_Dush:
+
+		//ダッシュ
+		if (IsDush == true && IsJump == false)
+		{
+			if (flameCount % 4 == 0)
+			{
+				AnimeNum++;
+				if (AnimeNum == 6)
+				{
+					AnimeNum = 0;
+				}
+			}
+		}
+
+		break;
+	case Stete_Jump:
+		//ジャンプ
+		//降下中
+		if (YSpeed > 0.0f)
+		{
+			AnimeNum = 7;
+		}
+		//上昇中
+		else if (YSpeed < 0.0f)
+		{
+			AnimeNum = 6;
+		}
+
+		break;
+	default:
+		break;
 	}
 }
