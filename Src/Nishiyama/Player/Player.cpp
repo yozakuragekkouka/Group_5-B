@@ -9,7 +9,7 @@ void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	flameCount = 0;
-	AnimeNum = 15;
+	AnimeNum = 0;
 
 	//playernumは遊ぶ人数で変える
 
@@ -74,7 +74,7 @@ void PLAYER::Step()
 	//移動アニメ切り替え処理
 	DushAnime();
 	//ジャンプアニメ切り替え処理
-	if (IsJump)
+	if (ActionStateID == Stete_Jump)
 	{
 		JumpAnime();
 	}
@@ -94,13 +94,13 @@ void PLAYER::Step()
 }
 
 //描画処理
-void PLAYER::Draw()
+void PLAYER::Draw(int playerNumber)
 {
 	//プレイヤーアニメ切り替え
 	//PlayerAnimetion();
 
 	//プレイヤーの描画
-	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[dir][AnimeNum], true, IsReturn, false);
+	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[playerNumber][AnimeNum], true, IsReturn, false);
 	
 	
 	//デバック
@@ -268,15 +268,12 @@ void PLAYER::PlayerAnimetion()
 	case State_Dush:
 
 		//ダッシュ
-		if (IsDush == true && IsJump == false)
+		if (flameCount % 4 == 0)
 		{
-			if (flameCount % 4 == 0)
+			AnimeNum++;
+			if (AnimeNum == 6)
 			{
-				AnimeNum++;
-				if (AnimeNum == 6)
-				{
-					AnimeNum = 0;
-				}
+				AnimeNum = 0;
 			}
 		}
 

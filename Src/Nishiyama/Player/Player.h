@@ -75,7 +75,7 @@ public:
 	//ŒJ‚è•Ô‚µˆ—
 	void Step();
 	//•`‰æ
-	void Draw();
+	void Draw(int playerNumber);
 	//ƒf[ƒ^íœ
 	void Delete();
 	//X‚ÆY‚ÌˆÚ“®§ŒÀ

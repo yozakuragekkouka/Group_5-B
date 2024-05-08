@@ -44,10 +44,10 @@ void ScenePlay::Step()
 void ScenePlay::Draw()
 {
 	bg.Draw();
-	player[0].Draw();
+	player[0].Draw(0);
 	if (PlayNumber == 2)
 	{
-		player[1].Draw();
+		player[1].Draw(1);
 	}
 }
 
