@@ -17,13 +17,21 @@ void SceneTitle::Init()
 
 	button_x = 440;
 	button_y = 400;
+
+	nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 }
 
 //タイトル通常処理
 void SceneTitle::Step()
 {
-	if (Input::IsKeyPush(KEY_INPUT_RETURN))
+	if (Input::IsKeyPush(KEY_INPUT_BACK))
 	{
+		nextScene = SCENEID::SCENE_ID_INIT_EDITOR;
+		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_TITLE;
+	}
+	else if (Input::IsKeyPush(KEY_INPUT_RETURN))
+	{
+		nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_TITLE;
 	}
 
@@ -52,5 +60,5 @@ void SceneTitle::Draw()
 //タイトル後処理
 void SceneTitle::Fin()
 {
-	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_PLAY;
+	SceneManager::g_CurrenySceneID = nextScene;
 }

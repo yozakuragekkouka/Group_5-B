@@ -3,6 +3,8 @@
 
 MapEditor::MapEditor()
 {
+	memset(&screenPos, 0, sizeof(VECTOR));
+
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		mapImage[i] = -1;
@@ -102,17 +104,17 @@ void MapEditor::Draw()
 
 			if (mapImage[(int)data[j][i]] != -1)
 			{
-				DrawGraph(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x,
-					MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y,
+				DrawGraph((int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x),
+					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y),
 					mapImage[(int)data[j][i]],
 					true);
 			}
 			else
 			{
-				DrawBox(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x,
-					MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y,
-					MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (i + 1) - screenPos.x,
-					MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (j + 1) - screenPos.y,
+				DrawBox((int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x),
+					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y),
+					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (i + 1) - screenPos.x),
+					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (j + 1) - screenPos.y),
 					GetColor(255, 0, 0),
 					true);
 			}

@@ -18,8 +18,8 @@ GimmickBase::GimmickBase(int dataX, int dataY)
 	Map_X = 0;
 	Map_Y = 0;
 
-	default_pos = VGet(-(MAPCHIP_SIZE * MAPCHIP_OVER) + MAPCHIP_SIZE * Map_X + MAPCHIP_SIZE / 2,
-		-(MAPCHIP_SIZE * MAPCHIP_OVER) + MAPCHIP_SIZE * Map_X + MAPCHIP_SIZE / 2,
+	default_pos = VGet((float)(-(MAPCHIP_SIZE * MAPCHIP_OVER) + MAPCHIP_SIZE * Map_X + MAPCHIP_SIZE / 2),
+		(float)(-(MAPCHIP_SIZE * MAPCHIP_OVER) + MAPCHIP_SIZE * Map_X + MAPCHIP_SIZE / 2),
 		0.0f);
 	pos = default_pos;
 }

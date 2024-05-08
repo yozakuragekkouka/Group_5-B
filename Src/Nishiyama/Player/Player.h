@@ -50,7 +50,7 @@ private:
 public:
 
 	//初期化
-	void Init(/*int playerNumber*/);
+	void Init(int playerNumber);
 	//データロード
 	void Load();
 	//繰り返し処理

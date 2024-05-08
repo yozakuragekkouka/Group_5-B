@@ -13,6 +13,9 @@ private:
 	int Playbutton_Hndl;
 
 	int button_x, button_y;
+
+	SCENEID nextScene;
+
 public:
 	void Init();
 
