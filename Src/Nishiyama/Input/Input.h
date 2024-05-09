@@ -16,8 +16,6 @@ private:
 	static bool mouse_flag;
 
 public:
-	static int GetMouseWheelRota() { return MouseWheelRota; }
-
 	static void AllInputInit();
 
 	static void AllInputDataSet();
@@ -43,6 +41,7 @@ public:
 	static void MouseInit();
 
 	static VECTOR GetMousePos() { return Mouse.Get_pos(); }
+	static int GetMouseWheelRota() { return MouseWheelRota; }
 
 	static void GetCurrentMouseState();
 
