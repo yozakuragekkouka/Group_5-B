@@ -89,6 +89,8 @@ void MapEditor::Step()
 		{
 			screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
 			screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
+
+			MouseLogPos = Input::GetMousePos();
 		}
 	}
 }

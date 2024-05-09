@@ -11,10 +11,18 @@ constexpr int MAPCHIP_NUM_Y = SCREEN_SIZE_Y / MAPCHIP_SIZE + MAPCHIP_OVER * 2;
 constexpr char ORIGINAL_MAP_PATH[5][128] =
 {
 	"aaaaa",
+	"aaaaa",
+	"aaaaa",
+	"aaaaa",
+	"aaaaa",
 };
 
 constexpr char EDIT_MAP_PATH[5][128] =
 {
+	"aaaaa",
+	"aaaaa",
+	"aaaaa",
+	"aaaaa",
 	"aaaaa",
 };
 
