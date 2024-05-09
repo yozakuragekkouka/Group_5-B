@@ -5,6 +5,7 @@
 //タイトル初期化
 void SceneEditor::Init()
 {
+	editor.Init();
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_EDITOR;
 }
 
@@ -15,16 +16,19 @@ void SceneEditor::Step()
 	{
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_EDITOR;
 	}
+
+	editor.Step();
 }
 
 //タイトル描画処理
 void SceneEditor::Draw()
 {
-
+	editor.Draw();
 }
 
 //タイトル後処理
 void SceneEditor::Fin()
 {
+	editor.Fin();
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;
 }
