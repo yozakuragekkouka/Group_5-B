@@ -70,6 +70,41 @@ void MapEditor::Init()
 
 void MapEditor::Step()
 {
+	//ƒ}ƒbƒvŠgk
+	if (GetMouseWheelRotVol() > 0)
+	{
+		int BufInt = (int)(DrawRate * 100.0f);
+
+		if (BufInt <= 10)
+		{
+			BufInt = 25;
+		}
+		else if(BufInt < 200)
+		{
+			BufInt += 25;
+		}
+
+		if (BufInt >= 200)
+		{
+			BufInt = 200;
+		}
+
+		DrawRate = (float)BufInt / 100.0f;
+	}
+	else if (GetMouseWheelRotVol() < 0)
+	{
+		int BufInt = (int)(DrawRate * 100.0f);
+
+		BufInt -= 25;
+
+		if (BufInt <= 10)
+		{
+			BufInt = 10;
+		}
+
+		DrawRate = (float)BufInt / 100.0f;
+	}
+
 	if (!MoveFlag)
 	{
 		if (Input::Mouse_Click())
@@ -101,8 +136,8 @@ void MapEditor::Draw()
 	{
 		for (int i = 0; i < MAPCHIP_NUM_X; i++)
 		{
-			if (data[j][i] == MAPCHIP_KIND::Air)
-				continue;
+			/*if (data[j][i] == MAPCHIP_KIND::Air)
+				continue;*/
 
 			if (mapImage[(int)data[j][i]] != -1)
 			{

@@ -155,7 +155,7 @@ void Input::GetCurrentMouseState()
 	Mouse.Set_posX((float)x);
 	Mouse.Set_posY((float)y);
 
-	MouseWheelRota = -GetMouseWheelRotVol();
+	MouseWheelRota = GetMouseWheelRotVol();
 }
 
 void Input::Mouse_SetCenter()
