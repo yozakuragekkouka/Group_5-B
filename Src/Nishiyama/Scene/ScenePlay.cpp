@@ -13,13 +13,14 @@ void ScenePlay::Init()
 
 	player = new PLAYER[2];
 
-
 	player[0].Init(1);
+	player[0].SetPlayerPos(Player1Pos);
 	player[0].Load();
-
+	
 	if (PlayNumber == 2)
 	{
 		player[1].Init(2);
+		player[1].SetPlayerPos(Player2Pos);
 		player[1].Load();
 	}
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
@@ -29,6 +30,7 @@ void ScenePlay::Init()
 void ScenePlay::Step()
 {
 	bg.Step();
+
 	player[0].Step();
 	if (PlayNumber == 2)
 	{
