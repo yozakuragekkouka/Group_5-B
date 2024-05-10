@@ -6,6 +6,10 @@
 #define TITLE_NAME_PATH	"Data/Title/TitleName.png"
 #define BUTTON_PATH		"Data/Title/PLAY-2024-5-10.png"
 
+#define PLAY_PATH		"Data/Title/1人でPLay.png"
+#define PLAY2_PATH		"Data/Title/2人でPLay.png"
+#define ARROW_PATH		"Data/Title/arrow.png"
+
 //シーン情報
 class SceneTitle : public SceneBase
 {
@@ -22,7 +26,13 @@ private:
 
 	int TitleName_Hndl;
 
+	int Play_Hndl;
 	int button_x, button_y;
+	int Play2_Hndl;
+	int button2_x, button2_y;
+
+	int arrow_Hndl;
+	int arrow_x, arrow_y;
 
 	SCENEID nextScene;
 

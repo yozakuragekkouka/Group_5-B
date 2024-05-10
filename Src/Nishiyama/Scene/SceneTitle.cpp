@@ -23,8 +23,19 @@ void SceneTitle::Init()
 	Playbutton_Hndl = LoadGraph(BUTTON_PATH);
 	TitleName_Hndl = LoadGraph(TITLE_NAME_PATH);
 
+	Play_Hndl = LoadGraph(PLAY_PATH);
+	Play2_Hndl = LoadGraph(PLAY2_PATH);
+
+	arrow_Hndl = LoadGraph(ARROW_PATH);
+
+	arrow_x = 450;
+	arrow_y = 450;
+
 	button_x = 650;
-	button_y = 500;
+	button_y = 450;
+
+	button2_x = 650;
+	button2_y = 600;
 
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
@@ -45,15 +56,18 @@ void SceneTitle::Step()
 		nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_TITLE;
 	}
-
+	
 	if (Input::IsKeyPush(KEY_INPUT_UP))
 	{
-		PlayNumber = 2;
+		arrow_y = 450;
+		PlayNumber = 1;
 	}
 
 	if (Input::IsKeyPush(KEY_INPUT_DOWN))
 	{
-		PlayNumber = 1;
+		arrow_y = 600;
+
+		PlayNumber = 2;
 	}
 
 	//背景移動処理
@@ -83,9 +97,13 @@ void SceneTitle::Draw()
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
 
-	DrawGraph(150, 0, TitleName_Hndl, true);
+	DrawRotaGraph(button_x, button_y, 0.25, 0.0, Play_Hndl, true);
 
-	DrawRotaGraph(button_x, button_y, 0.25, 0.0, Playbutton_Hndl, true);
+	DrawRotaGraph(button2_x, button2_y, 0.25, 0.0, Play2_Hndl, true);
+
+	DrawRotaGraph(arrow_x, arrow_y, 0.05, 0.0, arrow_Hndl, true);
+
+	DrawGraph(150, 0, TitleName_Hndl, true);
 
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤーの人数：%d", PlayNumber);
 }
@@ -93,5 +111,6 @@ void SceneTitle::Draw()
 //タイトル後処理
 void SceneTitle::Fin()
 {
+
 	SceneManager::g_CurrenySceneID = nextScene;
 }
