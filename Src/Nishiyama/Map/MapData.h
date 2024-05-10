@@ -17,7 +17,8 @@ constexpr char ORIGINAL_MAP_PATH[5][128] =
 	"aaaaa",
 };
 
-constexpr char EDIT_MAP_PATH[5][128] =
+constexpr int EDIT_MAP_NUM = 5;
+constexpr char EDIT_MAP_PATH[EDIT_MAP_NUM][128] =
 {
 	"aaaaa",
 	"aaaaa",
@@ -29,13 +30,16 @@ constexpr char EDIT_MAP_PATH[5][128] =
 enum class MAPCHIP_KIND
 {
 	Air,
+	WhiteBlock,
+	WhitePillar,
+	WhiteRenga,
 
 	KindNum
 };
 
 enum class GimmickID
 {
-	NONE,
+	yaiba,
 
 	KIND_NUM
 };
@@ -43,6 +47,9 @@ enum class GimmickID
 constexpr char MAPCHIP_PATH[(int)MAPCHIP_KIND::KindNum][128] =
 {
 	"",
+	"Data/Image/Map/WhiteBlock.png",
+	"Data/Image/Map/WhitePillar.png",
+	"Data/Image/Map/WhiteRenga.png",
 };
 
 typedef MAPCHIP_KIND MapData[MAPCHIP_NUM_Y][MAPCHIP_NUM_X];
