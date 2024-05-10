@@ -5,8 +5,10 @@ MapEditor::MapEditor()
 {
 	memset(&screenPos, 0, sizeof(VECTOR));
 
+	MoveFlag = false;
+
 	currentEditMapID = 0;
-	currentSelectTool = EditTool::Move;
+	currentSelectTool = EditTool::Block;
 	toolSelectFlag = false;
 
 	currentToolID = 0;
@@ -18,7 +20,7 @@ MapEditor::MapEditor()
 
 	memset(&data, 0, sizeof(MapData));
 
-	MoveFlag = false;
+	MoveNowFlag = false;
 	memset(&MouseLogPos, 0, sizeof(VECTOR));
 	memset(&isSet, 0, sizeof(isSet));
 
@@ -48,8 +50,10 @@ MapEditor::~MapEditor()
 
 void MapEditor::Init()
 {
+	MoveFlag = false;
+
 	currentEditMapID = 0;
-	currentSelectTool = EditTool::Move;
+	currentSelectTool = EditTool::Block;
 	toolSelectFlag = false;
 
 	currentToolID = 0;
@@ -62,7 +66,7 @@ void MapEditor::Init()
 		mapImage[i] = LoadGraph(MAPCHIP_PATH[i]);
 	}
 
-	MoveFlag = false;
+	MoveNowFlag = false;
 	memset(&MouseLogPos, 0, sizeof(VECTOR));
 	for (int j = 0; j < MAPCHIP_NUM_Y; j++)
 	{
@@ -82,6 +86,7 @@ void MapEditor::Init()
 
 void MapEditor::Step()
 {
+	int MouseState = GetMouseInput();
 	//マップ拡縮
 	if (Input::GetMouseWheelRota() > 0)
 	{
@@ -117,6 +122,58 @@ void MapEditor::Step()
 		DrawRate = (float)BufInt / 100.0f;
 	}
 
+	//マップ移動
+	if (!MoveNowFlag)
+	{
+		if ((MouseState & MOUSE_INPUT_RIGHT) != 0)
+		{
+			//押されている
+			if (MoveFlag == false)
+			{
+				//押されつづけていない
+				MoveFlag = true;
+				
+				MoveNowFlag = true;
+				MouseLogPos = Input::GetMousePos();
+			}
+		}
+		else
+		{
+			//押されていない
+			MoveFlag = false;
+		}
+	}
+	else
+	{
+		if ((MouseState & MOUSE_INPUT_RIGHT) != 0)
+		{
+			//押されている
+			screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
+			screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
+
+			MouseLogPos = Input::GetMousePos();
+		}
+		else
+		{
+			//押されていない
+			if (MoveFlag == true)
+			{
+				//押されつづけていた
+				MoveFlag = false;
+
+				MoveNowFlag = false;
+				memset(&MouseLogPos, 0, sizeof(VECTOR));
+			}
+			else
+			{
+				screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
+				screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
+
+				MouseLogPos = Input::GetMousePos();
+			}
+		}
+	}
+
 	//ツール変更
 	for (int i = 0; i < (int)EditTool::KindNum; i++)
 	{
@@ -126,14 +183,13 @@ void MapEditor::Step()
 			mouse.y < EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + EDIT_TOOL_SELECT_SIZE_X &&
 			mouse.y < EDIT_TOOL_SELECT_Y)
 		{
-			if ((GetMouseInput() & MOUSE_INPUT_LEFT) != 0)
+			if ((MouseState & MOUSE_INPUT_LEFT) != 0)
 			{
 				//押されている
 				if (toolSelectFlag == false)
 				{
 					//押されつづけていない
-					MoveFlag = false;
-					memset(&MouseLogPos, 0, sizeof(VECTOR));
+					toolSelectFlag = true;
 
 					currentSelectTool = (EditTool)i;
 				}
@@ -145,35 +201,16 @@ void MapEditor::Step()
 			}
 		}
 	}
+	if ((MouseState & MOUSE_INPUT_LEFT) == 0)
+	{
+		toolSelectFlag = false;
+	}
 
 	switch (currentSelectTool)
 	{
-	case EditTool::Move:
-		if (!MoveFlag)
-		{
-			if (Input::Mouse_Click())
-			{
-				MoveFlag = true;
-				MouseLogPos = Input::GetMousePos();
-			}
-		}
-		else
-		{
-			if (Input::Mouse_Release())
-			{
-				MoveFlag = false;
-				memset(&MouseLogPos, 0, sizeof(VECTOR));
-			}
-			else
-			{
-				screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
-				screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
-
-				MouseLogPos = Input::GetMousePos();
-			}
-		}
+	case EditTool::Block:
 		break;
-	case EditTool::Draw:
+	case EditTool::Gimmick:
 		break;
 	default:
 		break;

@@ -12,22 +12,24 @@ constexpr int EDIT_TOOL_Y = 100 + EDIT_TOOL_SELECT_Y;
 
 enum class EditTool
 {
-	Move,
-	Draw,
+	Block,
+	Gimmick,
 
 	KindNum
 };
 
 constexpr char EDIT_TOOL_NAME[(int)EditTool::KindNum][128] =
 {
-	"Move",
-	"Draw",
+	"Block",
+	"Gimmick",
 };
 
 class MapEditor
 {
 private:
 	VECTOR screenPos;
+
+	bool MoveFlag;
 
 	int currentEditMapID;
 
@@ -39,7 +41,7 @@ private:
 	int mapImage[(int)MAPCHIP_KIND::KindNum];
 	MapData data;
 
-	bool MoveFlag;
+	bool MoveNowFlag;
 	VECTOR MouseLogPos;
 	bool isSet[MAPCHIP_NUM_Y][MAPCHIP_NUM_X];
 
