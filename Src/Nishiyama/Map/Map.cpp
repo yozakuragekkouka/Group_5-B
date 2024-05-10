@@ -54,7 +54,7 @@ void Map::Init()
 		{
 			switch (gimmickID[i])
 			{
-			case GimmickID::NONE:
+			case GimmickID::yaiba:
 				//gimmick[i] = new a;
 				gimmick[i]->Init();
 				break;

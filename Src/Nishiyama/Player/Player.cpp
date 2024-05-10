@@ -8,6 +8,7 @@
 void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
+
 	flameCount = 0;
 	AnimeNum = 0;
 
@@ -20,18 +21,29 @@ void PLAYER::Init(int playerNumber)
 	Pos = { 32.0f, 500.0f, 0.0f };
 
 
+
 	IsJump = false;
 	IsDush = false;
 	IsReturn = true;
+
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		bulletInfo[i].BulletReturn = true;
+		bulletInfo[i].IsUse = false;
+		bulletInfo[i].BulletPos = { 0.0f, 0.0f, 0.0f };
+		bulletInfo[i].Speed = 0.0f;
+	}
 
 	YSpeed = 0.0f;
 	Gravity = 0.5f;
 	JunpCount = 0;
 
+	
 
 	ActionButton[0] = KEY_INPUT_W;		//ジャンプ
 	ActionButton[1] = KEY_INPUT_A;		//左移動
 	ActionButton[2] = KEY_INPUT_D;		//右移動
+	ActionButton[3] = KEY_INPUT_SPACE;	//発射ボタン
 	
 	if(playerNumber == 2)
 	{
@@ -40,15 +52,22 @@ void PLAYER::Init(int playerNumber)
 
 
 		Pos = { 1248.0f, 500.0f, 0.0f };
-		
 
-		IsJump = false;
-		IsDush = false;
 		IsReturn = false;
 
-		ActionButton[0] = KEY_INPUT_U;		//ジャンプ
-		ActionButton[1] = KEY_INPUT_H;		//左移動
-		ActionButton[2] = KEY_INPUT_K;		//右移動
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		{
+			bulletInfo[i].BulletReturn = true;
+			bulletInfo[i].IsUse = false;
+			bulletInfo[i].BulletPos = { 0.0f, 0.0f, 0.0f };
+			bulletInfo[i].Speed = 0.0f;
+
+		}
+
+		ActionButton[0] = KEY_INPUT_UP;		//ジャンプ
+		ActionButton[1] = KEY_INPUT_LEFT;	//左移動
+		ActionButton[2] = KEY_INPUT_RIGHT;	//右移動
+		ActionButton[3] = KEY_INPUT_RSHIFT;	//発射ボタン
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
@@ -60,6 +79,11 @@ void PLAYER::Load()
 	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.PlayerHndl[0]);
 	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.PlayerHndl[1]);
 
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		LoadDivGraph(BULLETHNDL_PATH, 24, 6, 4, 160, 80, bulletInfo[i].BulletHndl);
+	}
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
@@ -68,6 +92,7 @@ void PLAYER::Step()
 {
 	flameCount++;
 	OldPos = Pos;
+
 
 	//移動処理
 	Move();
@@ -89,6 +114,18 @@ void PLAYER::Step()
 	YSpeed += Gravity;
 
 
+
+	//弾の発射間隔調整
+	BulletCount();
+
+	//弾の発射処理
+	if (Input::IsKeyPush(ActionButton[3]))
+	{
+		BulletShot();
+	}
+	//弾の移動
+	MoveBullet();
+
 	//移動制限
 	LimitX_Y();
 }
@@ -102,6 +139,25 @@ void PLAYER::Draw(int playerNumber)
 	//プレイヤーの描画
 	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[playerNumber][AnimeNum], true, IsReturn, false);
 	
+	//弾の描画
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		//弾が使用中なら描画する
+		if (bulletInfo[i].IsUse)
+		{
+			DrawRotaGraph(bulletInfo[i].BulletPos.x, bulletInfo[i].BulletPos.y,
+				1.0, 0.0, bulletInfo[i].BulletHndl[bulletInfo[i].BulletAnimeIndex], true,bulletInfo[i].BulletReturn, false);
+
+			if (flameCount % 4 == 0)
+			{
+				bulletInfo[i].BulletAnimeIndex++;
+				if (bulletInfo[i].BulletAnimeIndex == 6)
+				{
+					bulletInfo[i].BulletAnimeIndex = 0;
+				}
+			}
+		}
+	}
 	
 	//デバック
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
@@ -294,5 +350,86 @@ void PLAYER::PlayerAnimetion()
 		break;
 	default:
 		break;
+	}
+}
+
+//弾の発射間隔調整
+void PLAYER::BulletCount()
+{
+	LoopCount++;
+	if (LoopCount > SHOT_INTERVAL)
+	{
+		LoopCount = SHOT_INTERVAL;
+	}
+}
+
+//弾の発射処理
+void PLAYER::BulletShot()
+{
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		if (!bulletInfo[i].IsUse)
+		{
+			bulletInfo[i].BulletPos.x = Pos.x;
+			bulletInfo[i].BulletPos.y = Pos.y;
+			bulletInfo[i].BulletPos.z = 0.0f;
+
+			bulletInfo[i].BulletAnimeIndex = 0;
+			bulletInfo[i].IsUse = true;
+
+			switch (dir)
+			{
+			case IsLeft:
+				bulletInfo[i].Isdir = IsLeft;
+				bulletInfo[i].BulletReturn = false;
+
+				break;
+
+			case IsRight:
+				bulletInfo[i].Isdir = IsRight;
+				bulletInfo[i].BulletReturn = true;
+				break;
+
+			default:
+				break;
+			}
+
+			//玉発射間隔を初期化
+			LoopCount = 0;
+			break;
+		}
+	}
+}
+
+//弾の移動
+void PLAYER::MoveBullet()
+{
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		
+
+		if(bulletInfo[i].IsUse == true)
+		{
+
+			switch (bulletInfo[i].Isdir)
+			{
+			case 0:
+				bulletInfo[i].Speed = -5.0f;
+
+			case 1:
+				bulletInfo[i].Speed = 5.0f;
+
+			default:
+				break;
+			}
+
+			bulletInfo[i].BulletPos.x += bulletInfo[i].Speed;
+
+			//画面外に出たらフラグを折る
+			if (bulletInfo[i].BulletPos.x < 0 || bulletInfo[i].BulletPos.x > SCREEN_SIZE_X)
+			{
+				bulletInfo[i].IsUse = false;
+			}
+		}
 	}
 }

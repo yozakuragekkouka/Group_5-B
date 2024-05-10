@@ -5,6 +5,14 @@ MapEditor::MapEditor()
 {
 	memset(&screenPos, 0, sizeof(VECTOR));
 
+	MoveFlag = false;
+
+	currentEditMapID = 0;
+	currentSelectTool = EditTool::Block;
+	toolSelectFlag = false;
+
+	currentToolID = 0;
+
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		mapImage[i] = -1;
@@ -12,7 +20,7 @@ MapEditor::MapEditor()
 
 	memset(&data, 0, sizeof(MapData));
 
-	MoveFlag = false;
+	MoveNowFlag = false;
 	memset(&MouseLogPos, 0, sizeof(VECTOR));
 	memset(&isSet, 0, sizeof(isSet));
 
@@ -42,6 +50,14 @@ MapEditor::~MapEditor()
 
 void MapEditor::Init()
 {
+	MoveFlag = false;
+
+	currentEditMapID = 0;
+	currentSelectTool = EditTool::Block;
+	toolSelectFlag = false;
+
+	currentToolID = 0;
+
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		if (i == (int)MAPCHIP_KIND::Air)
@@ -50,7 +66,7 @@ void MapEditor::Init()
 		mapImage[i] = LoadGraph(MAPCHIP_PATH[i]);
 	}
 
-	MoveFlag = false;
+	MoveNowFlag = false;
 	memset(&MouseLogPos, 0, sizeof(VECTOR));
 	for (int j = 0; j < MAPCHIP_NUM_Y; j++)
 	{
@@ -70,18 +86,19 @@ void MapEditor::Init()
 
 void MapEditor::Step()
 {
+	int MouseState = GetMouseInput();
 	//マップ拡縮
-	if (GetMouseWheelRotVol() > 0)
+	if (Input::GetMouseWheelRota() > 0)
 	{
 		int BufInt = (int)(DrawRate * 100.0f);
 
 		if (BufInt <= 10)
 		{
-			BufInt = 25;
+			BufInt = 15;
 		}
 		else if(BufInt < 200)
 		{
-			BufInt += 25;
+			BufInt += 5;
 		}
 
 		if (BufInt >= 200)
@@ -91,11 +108,11 @@ void MapEditor::Step()
 
 		DrawRate = (float)BufInt / 100.0f;
 	}
-	else if (GetMouseWheelRotVol() < 0)
+	else if (Input::GetMouseWheelRota() < 0)
 	{
 		int BufInt = (int)(DrawRate * 100.0f);
 
-		BufInt -= 25;
+		BufInt -= 5;
 
 		if (BufInt <= 10)
 		{
@@ -105,59 +122,188 @@ void MapEditor::Step()
 		DrawRate = (float)BufInt / 100.0f;
 	}
 
-	if (!MoveFlag)
+	//マップ移動
+	if (!MoveNowFlag)
 	{
-		if (Input::Mouse_Click())
+		if ((MouseState & MOUSE_INPUT_RIGHT) != 0)
 		{
-			MoveFlag = true;
-			MouseLogPos = Input::GetMousePos();
+			//押されている
+			if (MoveFlag == false)
+			{
+				//押されつづけていない
+				MoveFlag = true;
+				
+				MoveNowFlag = true;
+				MouseLogPos = Input::GetMousePos();
+			}
+		}
+		else
+		{
+			//押されていない
+			MoveFlag = false;
 		}
 	}
 	else
 	{
-		if (Input::Mouse_Release())
+		if ((MouseState & MOUSE_INPUT_RIGHT) != 0)
 		{
-			MoveFlag = false;
-			memset(&MouseLogPos, 0, sizeof(VECTOR));
-		}
-		else
-		{
+			//押されている
 			screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
 			screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
 
 			MouseLogPos = Input::GetMousePos();
 		}
+		else
+		{
+			//押されていない
+			if (MoveFlag == true)
+			{
+				//押されつづけていた
+				MoveFlag = false;
+
+				MoveNowFlag = false;
+				memset(&MouseLogPos, 0, sizeof(VECTOR));
+			}
+			else
+			{
+				screenPos.x -= Input::GetMousePos().x - MouseLogPos.x;
+				screenPos.y -= Input::GetMousePos().y - MouseLogPos.y;
+
+				MouseLogPos = Input::GetMousePos();
+			}
+		}
 	}
+
+	//ツール変更
+	for (int i = 0; i < (int)EditTool::KindNum; i++)
+	{
+		VECTOR mouse = Input::GetMousePos();
+		if (mouse.x > EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i &&
+			mouse.y > 0 &&
+			mouse.y < EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + EDIT_TOOL_SELECT_SIZE_X &&
+			mouse.y < EDIT_TOOL_SELECT_Y)
+		{
+			if ((MouseState & MOUSE_INPUT_LEFT) != 0)
+			{
+				//押されている
+				if (toolSelectFlag == false)
+				{
+					//押されつづけていない
+					toolSelectFlag = true;
+
+					currentSelectTool = (EditTool)i;
+				}
+			}
+			else
+			{
+				//押されていない
+				toolSelectFlag = false;
+			}
+		}
+	}
+	if ((MouseState & MOUSE_INPUT_LEFT) == 0)
+	{
+		toolSelectFlag = false;
+	}
+
+	switch (currentSelectTool)
+	{
+	case EditTool::Block:
+		break;
+	case EditTool::Gimmick:
+		break;
+	default:
+		break;
+	}
+	
 }
 
 void MapEditor::Draw()
 {
+	//背景
+	DrawBox(0, 0, SCREEN_SIZE_X, SCREEN_SIZE_Y, GetColor(15, 15, 15), true);
+
+	int chip_size = (int)((float)MAPCHIP_SIZE * DrawRate);	//マップチップ拡縮
+	//編集領域背景
+	DrawBox((int)(chip_size * -MAPCHIP_OVER - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER - screenPos.y),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_X - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_Y - screenPos.y)
+		, GetColor(50, 50, 50), true);
+	//画面外領域
+	DrawBox((int)(chip_size * -MAPCHIP_OVER - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER - screenPos.y),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * 2 - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_Y - screenPos.y)
+		, GetColor(40, 40, 40), true);
+	DrawBox((int)(chip_size * -MAPCHIP_OVER + chip_size * (MAPCHIP_NUM_X - 2) - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER - screenPos.y),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_X - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_Y - screenPos.y)
+		, GetColor(40, 40, 40), true);
+	DrawBox((int)(chip_size * -MAPCHIP_OVER - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER - screenPos.y),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_X - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * 2 - screenPos.y)
+		, GetColor(40, 40, 40), true);
+	DrawBox((int)(chip_size * -MAPCHIP_OVER - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * (MAPCHIP_NUM_Y - 2) - screenPos.y),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_X - screenPos.x),
+		(int)(chip_size * -MAPCHIP_OVER + chip_size * MAPCHIP_NUM_Y - screenPos.y)
+		, GetColor(40, 40, 40), true);
+
 	for (int j = 0; j < MAPCHIP_NUM_Y; j++)
 	{
 		for (int i = 0; i < MAPCHIP_NUM_X; i++)
 		{
-			/*if (data[j][i] == MAPCHIP_KIND::Air)
-				continue;*/
+			if (data[j][i] == MAPCHIP_KIND::Air)
+				continue;
 
 			if (mapImage[(int)data[j][i]] != -1)
 			{
-				DrawGraph((int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x),
-					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y),
+				DrawExtendGraph((int)(chip_size * -MAPCHIP_OVER + chip_size * i - screenPos.x),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * j - screenPos.y),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * (i + 1) - screenPos.x),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * (j + 1) - screenPos.y),
 					mapImage[(int)data[j][i]],
 					true);
 			}
 			else
 			{
-				DrawBox((int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * i - screenPos.x),
-					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * j - screenPos.y),
-					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (i + 1) - screenPos.x),
-					(int)(MAPCHIP_SIZE * -MAPCHIP_OVER + MAPCHIP_SIZE * (j + 1) - screenPos.y),
+				DrawBox((int)(chip_size * -MAPCHIP_OVER + chip_size * i - screenPos.x),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * j - screenPos.y),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * (i + 1) - screenPos.x),
+					(int)(chip_size * -MAPCHIP_OVER + chip_size * (j + 1) - screenPos.y),
 					GetColor(255, 0, 0),
 					true);
 			}
 		}
 	}
 
+	//UI マップセレクト
+	DrawBox(0, EDIT_TOOL_Y, MAP_SELECT_X, SCREEN_SIZE_Y, GetColor(110, 110, 110), true);
+	//UI ツール
+	DrawBox(0, 0, SCREEN_SIZE_X, EDIT_TOOL_Y, GetColor(30, 30, 30), true);
+	DrawBox(0, EDIT_TOOL_SELECT_Y, SCREEN_SIZE_X, EDIT_TOOL_Y, GetColor(130, 130, 130), true);
+
+	for (int i = 0; i < (int)EditTool::KindNum; i++)
+	{
+		unsigned int BoxColor = GetColor(80, 80, 80);
+		if (i == (int)currentSelectTool)
+		{
+			BoxColor = GetColor(125, 125, 125);
+		}
+		DrawBox(EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i,
+			0,
+			EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + EDIT_TOOL_SELECT_SIZE_X,
+			EDIT_TOOL_SELECT_Y,
+			BoxColor, true);
+
+		DrawFormatString(EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + 10,
+			10,
+			GetColor(255, 255, 255),
+			EDIT_TOOL_NAME[i]);
+	}
 }
 
 void MapEditor::Fin()
