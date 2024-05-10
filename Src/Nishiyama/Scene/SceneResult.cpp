@@ -13,6 +13,10 @@ void SceneResult::Init()
 		BackGround_handle2[i] = LoadGraph(RESULT_BG2_PATH);
 	}
 
+	Win1P_Hndl = LoadGraph(PLAYER1WIN_PATH);
+	Win2P_Hndl = LoadGraph(PLAYER2WIN_PATH);
+	WinCPU_Hndl = LoadGraph(CPUWIN_PATH);
+
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
 
@@ -53,6 +57,24 @@ void SceneResult::Draw()
 		DrawGraph(bgSkyX[i], 0, BackGround_handle[i], true);
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
+
+	////1Pが2Pに勝った時の描画
+	//if(//PlaySceneでフラグがtrue)
+	//	{
+	//		DrawGraph(650, 500, Win1P_Hndl, true);
+	//	}
+	//else
+	//{
+	//	DrawGraph(650, 500, Win2P_Hndl, true);
+	//}
+	////1PがCPUに勝った時の描画
+	//else if(//1PのHP > CPUのHP　|| CPUのHP == 0)
+	//{
+	//	DrawGraph(650, 500, Win1P_Hndl, true);
+	//	}
+	//else {
+	//	DrawGraph(650, 500, WinCPU_Hndl, true);
+	//}
 }
 
 //クリア後処理
