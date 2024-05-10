@@ -195,7 +195,10 @@ void PLAYER::Move()
 {
 	if (Input::IsKeyKeep(ActionButton[2]))
 	{
-		ActionStateID = State_Dush;
+		if (IsJump == false)
+		{
+			ActionStateID = State_Dush;
+		}
 		IsDush = true;
 		dir = IsRight;
 		IsReturn = true;
@@ -203,7 +206,10 @@ void PLAYER::Move()
 	}
 	else if (Input::IsKeyKeep(ActionButton[1]))
 	{	
-		ActionStateID = State_Dush;
+		if (IsJump == false)
+		{
+			ActionStateID = State_Dush;
+		}		
 		IsDush = true;
 		dir = IsLeft;
 		IsReturn = false;
@@ -220,7 +226,7 @@ void PLAYER::Jump()
 {
 	if (JunpCount < JUMPMAX_NUM)
 	{
-		YSpeed = -10.0f;
+		YSpeed = -15.0f;
 		JunpCount++;
 	}
 }
@@ -337,6 +343,11 @@ void PLAYER::PlayerAnimetion()
 		}
 
 		break;
+
+	case State_Atack:
+		//攻撃中
+
+
 	default:
 		break;
 	}
@@ -359,16 +370,16 @@ void PLAYER::BulletShot()
 	{
 		if (!bulletInfo[i].IsUse)
 		{
-			bulletInfo[i].BulletPos.x = Pos.x;
-			bulletInfo[i].BulletPos.y = Pos.y;
-			bulletInfo[i].BulletPos.z = 0.0f;
-
 			bulletInfo[i].BulletAnimeIndex = 0;
 			bulletInfo[i].IsUse = true;
 
 			switch (dir)
 			{
 			case IsLeft:
+				bulletInfo[i].BulletPos.x = Pos.x + 5.0f;
+				bulletInfo[i].BulletPos.y = Pos.y;
+				bulletInfo[i].BulletPos.z = 0.0f;
+
 				bulletInfo[i].Speed = -5.0f;
 				bulletInfo[i].Isdir = IsLeft;
 				bulletInfo[i].BulletReturn = true;
@@ -376,6 +387,10 @@ void PLAYER::BulletShot()
 				break;
 
 			case IsRight:
+				bulletInfo[i].BulletPos.x = Pos.x - 5.0f;
+				bulletInfo[i].BulletPos.y = Pos.y;
+				bulletInfo[i].BulletPos.z = 0.0f;
+
 				bulletInfo[i].Speed = 5.0f;
 				bulletInfo[i].Isdir = IsRight;
 				bulletInfo[i].BulletReturn = false;
@@ -408,5 +423,27 @@ void PLAYER::MoveBullet()
 			}
 		}
 		
+	}
+}
+
+
+//アイテムを拾う処理
+void PLAYER::GetItem(VECTOR PlayerPos, VECTOR ItemPos)
+{
+	//当たり判定をとる
+
+	//当たったらアイテムをプレイヤーの腕付近に配置する
+
+	//取得フラグをオンにする
+	IsGet = true;
+}
+
+//アイテムを投げる処理
+void PLAYER::ThrowItem(VECTOR PlayerPos, VECTOR ItemPos)
+{
+	//もしフラグがオンなら投げる
+	if (IsGet == true)
+	{
+
 	}
 }

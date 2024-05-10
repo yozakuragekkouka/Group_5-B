@@ -13,7 +13,7 @@
 
 #define PLAYER_SIZE			(64)
 
-#define JUMPMAX_NUM			(3)
+#define JUMPMAX_NUM			(2)
 #define SPEED				(4.0f)
 
 #define BULLET_MAX_NUM		(3)
@@ -40,6 +40,7 @@ enum ACTIONSTATE
 	State_Normal,
 	State_Dush,
 	Stete_Jump,
+	State_Atack,
 };
 
 //弾の向き
@@ -84,9 +85,12 @@ protected:
 		float Speed;
 		
 	};
-
-
 	BulletInfo bulletInfo[BULLET_MAX_NUM];
+
+
+	//投げるアイテム
+	bool IsGet;
+
 
 	//判定フラグ
 	bool IsDush;
@@ -136,6 +140,12 @@ public:
 	//弾の移動
 	void MoveBullet();
 
+	//アイテムを拾う処理
+	void GetItem(VECTOR PlayerPos, VECTOR ItemPos);
+
+	//アイテムを投げる処理
+	void ThrowItem(VECTOR PlayerPos, VECTOR ItemPos);
+
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
 
@@ -143,6 +153,11 @@ public:
 	void SetPlayerPos(VECTOR Position)
 	{
 		Pos = Position;
+	}
+
+	VECTOR GetPlayerPos()
+	{
+		return Pos;
 	}
 };
 
