@@ -13,12 +13,12 @@
 
 #define PLAYER_SIZE			(64)
 
-#define JUMPMAX_NUM			(3)
+#define JUMPMAX_NUM			(2)
 #define SPEED				(4.0f)
 
 #define BULLET_MAX_NUM		(3)
 #define BULLET_ANIME_NUM	(24)
-#define SHOT_INTERVAL		(10000)
+#define SHOT_INTERVAL		(100)
 
 struct Hundle
 {
@@ -40,6 +40,14 @@ enum ACTIONSTATE
 	State_Normal,
 	State_Dush,
 	Stete_Jump,
+	State_Atack,
+};
+
+//弾の向き
+enum BULLETDIR
+{
+	BULLET_LEFT,
+	BULLET_RIGHT,
 };
 
 class PLAYER
@@ -48,6 +56,7 @@ protected:
 	//描画に使う変数
 	Hundle hundl;
 	int AnimeNum;
+	
 
 	//方向を決める変数
 	DIR dir;
@@ -55,7 +64,7 @@ protected:
 	VECTOR OldPos;
 
 	ACTIONSTATE ActionStateID;
-
+	ACTIONSTATE OldActionState;
 
 	//ジャンプに使う変数
 	float YSpeed;
@@ -76,14 +85,18 @@ protected:
 		float Speed;
 		
 	};
-
-
 	BulletInfo bulletInfo[BULLET_MAX_NUM];
+
+
+	//投げるアイテム
+	bool IsGet;
+
 
 	//判定フラグ
 	bool IsDush;
 	bool IsReturn;
 	bool IsJump;
+	bool IsGround;
 
 	int flameCount;
 	int LoopCount;
@@ -127,7 +140,24 @@ public:
 	//弾の移動
 	void MoveBullet();
 
+	//アイテムを拾う処理
+	void GetItem(VECTOR PlayerPos, VECTOR ItemPos);
+
+	//アイテムを投げる処理
+	void ThrowItem(VECTOR PlayerPos, VECTOR ItemPos);
+
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
+
+	//プレイヤーの座標設定
+	void SetPlayerPos(VECTOR Position)
+	{
+		Pos = Position;
+	}
+
+	VECTOR GetPlayerPos()
+	{
+		return Pos;
+	}
 };
 
