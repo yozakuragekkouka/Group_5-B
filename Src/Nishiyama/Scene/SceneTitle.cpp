@@ -13,7 +13,7 @@ void SceneTitle::Init()
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_TITLE;
 
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		BackGround_handle[i] = LoadGraph(TITLE_PATH);
 		BackGround_handle2[i] = LoadGraph(TITLE2_PATH);
@@ -21,14 +21,13 @@ void SceneTitle::Init()
 	
 
 	Playbutton_Hndl = LoadGraph(BUTTON_PATH);
+	TitleName_Hndl = LoadGraph(TITLE_NAME_PATH);
 
-	button_x = 440;
-	button_y = 400;
+	button_x = 650;
+	button_y = 500;
 
 	bgSkyX[0] = 0;
-	bgSkyX[1] = -SCREEN_SIZE_X;
-	bgSkyX1[0] = 0;
-	bgSkyX1[1] = -SCREEN_SIZE_X;
+	bgSkyX1[0] = 1280;
 
 	nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 }
@@ -58,18 +57,18 @@ void SceneTitle::Step()
 	}
 
 	//背景移動処理
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
-		bgSkyX[i] -= 2;
-		bgSkyX1[i] -= 2;
+		bgSkyX[i] -= 4;
+		bgSkyX1[i] -= 4;
 
-		if (bgSkyX[i] <= -1280)
+		if (bgSkyX[i] <= -1270)
 		{
-			bgSkyX[i] = 1270;
+			bgSkyX[i] = 1285;
 		}
-		if (bgSkyX1[i] <= -1280)
+		if (bgSkyX1[i] <= -1270)
 		{
-			bgSkyX1[i] = 1270;
+			bgSkyX1[i] = 1285;
 		}
 	}
 }
@@ -78,13 +77,15 @@ void SceneTitle::Step()
 void SceneTitle::Draw()
 {
 	//タイトル画像表示
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 1; i++)
 	{
 		DrawGraph(bgSkyX[i], 0, BackGround_handle[i], true);
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
 
-	DrawGraph(button_x, button_y, Playbutton_Hndl, true);
+	DrawGraph(150, 0, TitleName_Hndl, true);
+
+	DrawRotaGraph(button_x, button_y, 0.25, 0.0, Playbutton_Hndl, true);
 
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤーの人数：%d", PlayNumber);
 }

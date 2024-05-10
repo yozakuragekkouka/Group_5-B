@@ -3,7 +3,8 @@
 
 #define TITLE_PATH		"Data/Title/Title1.png"
 #define TITLE2_PATH		"Data/Title/Title2.png"
-#define BUTTON_PATH		"Data/Title/プレイボタン.png"
+#define TITLE_NAME_PATH	"Data/Title/TitleName.png"
+#define BUTTON_PATH		"Data/Title/PLAY-2024-5-10.png"
 
 //シーン情報
 class SceneTitle : public SceneBase
@@ -11,13 +12,15 @@ class SceneTitle : public SceneBase
 private:
 	
 	//背景のグローバル変数
-	int BackGround_handle[2] = { 0 };
-	int bgSkyX[2] = { 0 };
+	int BackGround_handle[1] = { 0 };
+	int bgSkyX[1] = { 0 };
 
-	int BackGround_handle2[2] = { 0 };
-	int bgSkyX1[2] = { 0 };
+	int BackGround_handle2[1] = { 0 };
+	int bgSkyX1[1] = { 0 };
 
 	int Playbutton_Hndl;
+
+	int TitleName_Hndl;
 
 	int button_x, button_y;
 
