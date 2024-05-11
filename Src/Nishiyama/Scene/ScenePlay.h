@@ -17,4 +17,25 @@ public:
 	void Step();
 	void Draw();
 	void Fin();
+
+	//‰œ‘º
+	struct MAPCollision
+	{
+		// ƒ}ƒbƒv‚Ì“–‚½‚è”»’è
+		void MapCollision(int num);
+
+		void CheckDirectionalCollision(int num, bool checkY);
+
+		void HandleCollision(int num, int mapIndexY, int mapIndexX,
+			bool dirArray[], int Ax, int Ay, int Aw, int Ah,
+			int Bx, int By, int Bw, int Bh, bool checkY);
+
+		void HandleDiagonalCollision(int num, int Ax, int Ay, int Aw, int Ah,
+			int Bx, int By, int Bw, int Bh);
+
+		bool IsDiagonalCollision(int Ax, int Ay, int Aw, int Ah,
+			int Bx, int By, int Bw, int Bh);
+
+
+	};
 };
