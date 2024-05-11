@@ -12,7 +12,9 @@ MapEditor::MapEditor()
 	toolSelectFlag = false;
 
 	currentToolID = 0;
+	toolElementSelectFlag = false;
 
+	eraserImage = -1;
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		mapImage[i] = -1;
@@ -31,6 +33,10 @@ MapEditor::MapEditor()
 
 MapEditor::~MapEditor()
 {
+	if (eraserImage != -1)
+	{
+		DeleteGraph(eraserImage);
+	}
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		if (mapImage[i] != -1)
@@ -57,6 +63,9 @@ void MapEditor::Init()
 	toolSelectFlag = false;
 
 	currentToolID = 0;
+	toolElementSelectFlag = false;
+
+	eraserImage = LoadGraph(ERASER_PATH);
 
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
@@ -180,7 +189,7 @@ void MapEditor::Step()
 		VECTOR mouse = Input::GetMousePos();
 		if (mouse.x > EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i &&
 			mouse.y > 0 &&
-			mouse.y < EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + EDIT_TOOL_SELECT_SIZE_X &&
+			mouse.x < EDIT_TOOL_SELECT_X_OFFSET + (EDIT_TOOL_SELECT_X_OFFSET + EDIT_TOOL_SELECT_SIZE_X) * i + EDIT_TOOL_SELECT_SIZE_X &&
 			mouse.y < EDIT_TOOL_SELECT_Y)
 		{
 			if ((MouseState & MOUSE_INPUT_LEFT) != 0)
@@ -200,15 +209,26 @@ void MapEditor::Step()
 				toolSelectFlag = false;
 			}
 		}
-	}
-	if ((MouseState & MOUSE_INPUT_LEFT) == 0)
-	{
-		toolSelectFlag = false;
+		else
+		{
+			toolSelectFlag = false;
+		}
 	}
 
 	switch (currentSelectTool)
 	{
 	case EditTool::Block:
+		for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
+		{
+			VECTOR mouse = Input::GetMousePos();
+			if (mouse.x > EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i &&
+				mouse.y > EDIT_TOOL_ELEMENT_Y &&
+				mouse.x < EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE &&
+				mouse.y < EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE)
+			{
+
+			}
+		}
 		break;
 	case EditTool::Gimmick:
 		break;
@@ -285,7 +305,8 @@ void MapEditor::Draw()
 	//UI ツール
 	DrawBox(0, 0, SCREEN_SIZE_X, EDIT_TOOL_Y, GetColor(30, 30, 30), true);
 	DrawBox(0, EDIT_TOOL_SELECT_Y, SCREEN_SIZE_X, EDIT_TOOL_Y, GetColor(130, 130, 130), true);
-
+	
+	//ツールセレクト文字
 	for (int i = 0; i < (int)EditTool::KindNum; i++)
 	{
 		unsigned int BoxColor = GetColor(80, 80, 80);
@@ -304,10 +325,68 @@ void MapEditor::Draw()
 			GetColor(255, 255, 255),
 			EDIT_TOOL_NAME[i]);
 	}
+
+	//ツール.内容
+	switch (currentSelectTool)
+	{
+	case EditTool::Block:
+		for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
+		{
+			if (i == (int)MAPCHIP_KIND::Air)
+			{
+				if (eraserImage != -1)
+				{
+					DrawExtendGraph(EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i,
+						EDIT_TOOL_ELEMENT_Y,
+						EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE,
+						EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE,
+						eraserImage, true);
+				}
+				else
+				{
+					DrawBox(EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i,
+						EDIT_TOOL_ELEMENT_Y,
+						EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE,
+						EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE,
+						GetColor(255, 0, 0), true);
+				}
+				continue;
+			}
+
+			if (mapImage[i] != -1)
+			{
+				DrawExtendGraph(EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i,
+					EDIT_TOOL_ELEMENT_Y,
+					EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE,
+					EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE,
+					mapImage[i], true);
+			}
+			else
+			{
+				DrawBox(EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i,
+					EDIT_TOOL_ELEMENT_Y,
+					EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE,
+					EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE,
+					GetColor(255, 0, 0), true);
+			}
+		}
+		break;
+	case EditTool::Gimmick:
+		break;
+	default:
+		break;
+	}
 }
 
 void MapEditor::Fin()
 {
+
+	if (eraserImage != -1)
+	{
+		DeleteGraph(eraserImage);
+		eraserImage = -1;
+	}
+
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
 		if (mapImage[i] != -1)

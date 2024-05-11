@@ -4,11 +4,16 @@
 #include "../Map/MapData.h"
 #include "../Gimmick/Gimmick.h"
 
+constexpr char ERASER_PATH[128] = "Data/Image/Map/eraser.png";
+
 constexpr int MAP_SELECT_X = 100;
 constexpr int EDIT_TOOL_SELECT_SIZE_X = 200;
 constexpr int EDIT_TOOL_SELECT_X_OFFSET = 30;
 constexpr int EDIT_TOOL_SELECT_Y = 30;
 constexpr int EDIT_TOOL_Y = 100 + EDIT_TOOL_SELECT_Y;
+
+constexpr int EDIT_TOOL_ELEMENT_X_OFFSET = 30;
+constexpr int EDIT_TOOL_ELEMENT_Y = 60;
 
 enum class EditTool
 {
@@ -37,7 +42,9 @@ private:
 	bool toolSelectFlag;
 
 	int currentToolID;
+	bool toolElementSelectFlag;
 
+	int eraserImage;
 	int mapImage[(int)MAPCHIP_KIND::KindNum];
 	MapData data;
 
