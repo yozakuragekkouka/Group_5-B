@@ -59,6 +59,7 @@ protected:
 	
 	//プレイヤーのライフ
 	int Life;
+	int DamageCoolTime;
 
 	//近接攻撃の攻撃力
 	int closeAttackDm;
@@ -232,6 +233,24 @@ public:
 	void Damege(int damege)
 	{
 		Life -= damege;
+	}
+
+	//ダメージクールタイム取得
+	int GetDamegeCoolTime()
+	{
+		return DamageCoolTime;
+	}
+
+	//ダメージクールタイム設定
+	void SetDamageCoolTime()
+	{
+		DamageCoolTime = 0;
+	}
+
+	//ダメージクールタイム増加
+	void AddDamageCoolTime(int AddTime)
+	{
+		DamageCoolTime += AddTime;
 	}
 };
 

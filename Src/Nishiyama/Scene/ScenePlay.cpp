@@ -45,35 +45,50 @@ void ScenePlay::Step()
 	{
 		player[1].Step();
 	}
-
-	/*for (int BulletIndex = 0; BulletIndex < player[0].GetBulletMaxNum(); BulletIndex++)
-	{
-	}
-
-	for (int BulletIndex = 0; BulletIndex < player[1].GetBulletMaxNum(); BulletIndex++)
-	{
-	}*/
-
+	//近接攻撃の当たり判定
+	
+	//弾の当たり判定--------------------------------------------------------------
 	//プレイヤー1の弾の当たり判定(プレイヤー2がダメージを受ける)
-	if (player[0].GetBulletIsUse() == true)
+	if (player[0].GetDamegeCoolTime() >= 30)
 	{
-		if (Collision::IsHitRect(player[0].GetBulletPos(), player[1].GetPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+		if (player[0].GetBulletIsUse() == true)
 		{
-			//プレイヤー2にダメージを与える
-			player[1].Damege(player[0].GetBulletDamege());
-			//弾の使用フラグをfalseにする
-			player[0].SetBulletIsUse();
+
+			if (Collision::IsHitRect(player[0].GetBulletPos(), player[1].GetPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+			{
+				//プレイヤー2にダメージを与える
+				player[1].Damege(player[0].GetBulletDamege());
+				//ダメージクールタイムを0にする
+				player[1].SetDamageCoolTime();
+				//弾の使用フラグをfalseにする
+				player[0].SetBulletIsUse();
+			}
 		}
 	}
-	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
-	if (player[1].GetBulletIsUse() == true)
+	
+	if (player[1].GetDamegeCoolTime() >= 30)
 	{
-		if (Collision::IsHitRect(player[1].GetBulletPos(), player[0].GetPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+		//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
+		if (player[1].GetBulletIsUse() == true)
 		{
-			//プレイヤー1にダメージを与える
-			player[0].Damege(player[1].GetBulletDamege());
-			//弾の使用フラグをfalseにする
-			player[1].SetBulletIsUse();
+			if (Collision::IsHitRect(player[1].GetBulletPos(), player[0].GetPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+			{
+				//プレイヤー1にダメージを与える
+				player[0].Damege(player[1].GetBulletDamege());
+				//ダメージクールタイムを0にする
+				player[1].SetDamageCoolTime();
+				//弾の使用フラグをfalseにする
+				player[1].SetBulletIsUse();
+			}
+		}
+	}
+	//---------------------------------------------------------------------------
+
+	for (int Number = 1; Number < 3; Number++)
+	{
+		if (player[Number].GetDamegeCoolTime() <= 30)
+		{
+			player[Number].AddDamageCoolTime(1);
 		}
 	}
 
