@@ -38,4 +38,9 @@ public:
 
 
 	};
+
+	//‹{‹ß
+	//’e‚Ì“–‚½‚è”»’è
+	//ˆø”1‚ªUŒ‚‚ğH‚ç‚¤‚æ‚¤‚É‚µ‚Ä‚Ü‚·
+	void IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum);
 };

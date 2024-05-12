@@ -1,7 +1,9 @@
 #include "Player.h"
 #include "../Scene/Scene.h"
 #include "../Input/Input.h"
+#include "../Collision/Collision.h"
 #include "../../Common.h"
+
 
 
 //初期化
@@ -11,11 +13,17 @@ void PLAYER::Init(int playerNumber)
 
 	flameCount = 0;
 	AnimeNum = 0;
+	PlayerSize = { 64.0f, 64.0f, 0.0f };
+	
 
-	//playernumは遊ぶ人数で変える
+	//近接攻撃の攻撃力
+	closeAttackDm = 10;
+
+	//アイテムフラグ
+	IsGet = false;
 
 	//プレイヤー1の初期化
-	dir = IsLeft;
+	dir = IsRight;
 	ActionStateID = State_Normal;
 
 
@@ -24,6 +32,7 @@ void PLAYER::Init(int playerNumber)
 	IsReturn = true;
 	IsGround = false;
 
+	//弾情報関連
 	for (int i = 0; i < BULLET_MAX_NUM; i++)
 	{
 		bulletInfo[i].BulletReturn = true;
@@ -31,6 +40,8 @@ void PLAYER::Init(int playerNumber)
 		bulletInfo[i].BulletPos = { 0.0f, 0.0f, 0.0f };
 		bulletInfo[i].Speed = 0.0f;
 	}
+	BulletDamege = 5;
+	BulletSize = { 160.0f, 80.0f, 0.0f };
 
 	YSpeed = 0.0f;
 	Gravity = 0.5f;
@@ -41,20 +52,28 @@ void PLAYER::Init(int playerNumber)
 	ActionButton[1] = KEY_INPUT_A;		//左移動
 	ActionButton[2] = KEY_INPUT_D;		//右移動
 	ActionButton[3] = KEY_INPUT_SPACE;	//発射ボタン
-		
+	ActionButton[4] = KEY_INPUT_E;		//近距離攻撃
+	ActionButton[5] = KEY_INPUT_F;		//アイテム攻撃
+
 	if(playerNumber == 2)
 	{
+
+		Life = 100;
+
 		dir = IsLeft;
 		IsReturn = false;
 
 		//プレイヤー2の移動キー
-		ActionButton[0] = KEY_INPUT_UP;		//ジャンプ
-		ActionButton[1] = KEY_INPUT_LEFT;	//左移動
-		ActionButton[2] = KEY_INPUT_RIGHT;	//右移動
-		ActionButton[3] = KEY_INPUT_RSHIFT;	//発射ボタン
+		ActionButton[0] = KEY_INPUT_UP;			//ジャンプ
+		ActionButton[1] = KEY_INPUT_LEFT;		//左移動
+		ActionButton[2] = KEY_INPUT_RIGHT;		//右移動
+		ActionButton[3] = KEY_INPUT_RSHIFT;		//発射ボタン
+		ActionButton[4] = KEY_INPUT_RCONTROL;	//近距離攻撃
+		ActionButton[5] = KEY_INPUT_M;			//アイテム攻撃
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
+	Life = 100;
 }
 
 //画像読み込み
@@ -106,6 +125,19 @@ void PLAYER::Step()
 	//弾の移動
 	MoveBullet();
 
+	//アイテム処理
+	/*if (Input::IsKeyPush(ActionButton[5]))
+	{
+		if (!IsGet)
+		{
+			GetItem();
+		}
+		else
+		{
+			ThrowItem();
+		}
+	}*/
+
 	//移動制限
 	LimitX_Y();
 
@@ -146,6 +178,20 @@ void PLAYER::Draw(int playerNumber)
 	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
+
+	if (IsGet == true)
+	{
+		DrawString(0, 100, "Player1アイテムを持っている", GetColor(255, 255, 255));
+		if (Input::IsKeyPush(ActionButton[5]))
+		{
+			DrawString(0, 115, "Player1アイテムを投げた", GetColor(255, 255, 255));
+		}
+	}
+	else
+	{
+		DrawString(0, 100, "Player1アイテムを持っていない", GetColor(255, 255, 255));
+	}
+
 	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
 }
 
@@ -159,21 +205,21 @@ void PLAYER::Delete()
 void PLAYER::LimitX_Y()
 {
 	//X座標制限
-	if (Pos.x + PLAYER_SIZE / 2 >= SCREEN_SIZE_X)
+	if (Pos.x + PlayerSize.x / 2 >= SCREEN_SIZE_X)
 	{
-		Pos.x = SCREEN_SIZE_X - PLAYER_SIZE / 2;
+		Pos.x = SCREEN_SIZE_X - PlayerSize.x / 2;
 	}
-	else if (Pos.x - PLAYER_SIZE / 2 < 0.0f)
+	else if (Pos.x - PlayerSize.x / 2 < 0.0f)
 	{
-		Pos.x = PLAYER_SIZE / 2;
+		Pos.x = PlayerSize.x / 2;
 	}
 
 	//Y座標制限
 	//
-	if (Pos.y + PLAYER_SIZE / 2 >= SCREEN_SIZE_Y)
+	if (Pos.y + PlayerSize.y / 2 >= SCREEN_SIZE_Y)
 	{
 		YSpeed = 0.0f;
-		Pos.y = SCREEN_SIZE_Y - PLAYER_SIZE / 2;
+		Pos.y = SCREEN_SIZE_Y - PlayerSize.y / 2;
 		JunpCount = 0;
 		IsJump = false;
 
@@ -183,9 +229,9 @@ void PLAYER::LimitX_Y()
 		}
 
 	}
-	else if (Pos.y - PLAYER_SIZE / 2 < 0.0f)
+	else if (Pos.y - PlayerSize.y / 2 < 0.0f)
 	{
-		Pos.y = PLAYER_SIZE / 2;
+		Pos.y = PlayerSize.y / 2;
 		YSpeed = 0.0f;
 	}
 }
@@ -299,7 +345,6 @@ void PLAYER::PulsY(int PosY, float Height)
 		YSpeed = -0.5f;
 	}
 }
-
 
 //アニメーション切り替え処理
 void PLAYER::PlayerAnimetion()
@@ -428,22 +473,24 @@ void PLAYER::MoveBullet()
 
 
 //アイテムを拾う処理
-void PLAYER::GetItem(VECTOR PlayerPos, VECTOR ItemPos)
+void PLAYER::GetItem(VECTOR ItemPos, VECTOR ItemSize)
 {
 	//当たり判定をとる
-
-	//当たったらアイテムをプレイヤーの腕付近に配置する
-
-	//取得フラグをオンにする
-	IsGet = true;
+	if (Collision::IsHitRect(Pos, ItemPos, PlayerSize, ItemSize))
+	{
+		//当たったらアイテムをプレイヤーの腕付近に配置する
+		ItemPos = Pos;
+		//取得フラグをオンにする
+		IsGet = true;
+	}
 }
 
 //アイテムを投げる処理
-void PLAYER::ThrowItem(VECTOR PlayerPos, VECTOR ItemPos)
+void PLAYER::ThrowItem(VECTOR ItemPos)
 {
 	//もしフラグがオンなら投げる
 	if (IsGet == true)
 	{
-
+		IsGet = false;
 	}
 }

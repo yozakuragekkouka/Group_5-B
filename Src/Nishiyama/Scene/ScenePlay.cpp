@@ -5,6 +5,7 @@
 #include "../Input/Input.h"
 #include "ScenePlay.h"
 #include "SceneTitle.h"
+#include "../Collision/Collision.h"
 
 //奥村
 #include"../DefaultMap/DefaultMap.h"
@@ -44,9 +45,33 @@ void ScenePlay::Step()
 	{
 		player[1].Step();
 	}
-	if (Input::IsKeyPush(KEY_INPUT_RETURN))
+
+	//プレイヤー1の弾の当たり判定(プレイヤー2がダメージを受ける)
+	if (player[0].GetBulletIsUse() == true)
 	{
-		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
+		IsHitBullet(player[0].GetBulletPos(), player[0].GetBulletSize(), player[1].GetPlayerPos(), player[1].GetPlayerSize(),
+			player[0].GetBulletDamege(), 1, 0);
+	}
+	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
+	if (player[0].GetBulletIsUse() == true)
+	{
+		IsHitBullet(player[1].GetBulletPos(), player[1].GetBulletSize(), player[0].GetPlayerPos(), player[0].GetPlayerSize(),
+			player[1].GetBulletDamege(), 0, 1);
+	}
+
+	if (PlayNumber == 1)
+	{
+		if (player[0].GetHP() <= 0)
+		{
+			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
+		}
+	}
+	else if (PlayNumber == 2)
+	{
+		if (player[0].GetHP() <= 0 || player[1].GetHP() <= 0)
+		{
+			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
+		}
 	}
 }
 
@@ -63,6 +88,10 @@ void ScenePlay::Draw()
 	{
 		player[1].Draw(1);
 	}
+
+	DrawFormatString(0, 200, GetColor(255, 255, 255), "プレイヤー1の体力：%d", player[0].GetHP());
+	DrawFormatString(0, 215, GetColor(255, 255, 255), "プレイヤー2の体力：%d", player[1].GetHP());
+
 }
 
 //プレイシーン後処理
@@ -84,4 +113,20 @@ void ScenePlay::Fin()
 	CMap = nullptr;
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
+}
+
+
+
+//弾の当たり判定
+//Posで指定したプレイヤーが攻撃を食らうようにしてます
+//第6引数はダメージを受ける方のプレイヤー配列番号(0か1)
+//第7引数はダメージを与える方のプレイヤー配列番号(0か1)
+void ScenePlay::IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum)
+{
+	//弾とプレイヤーの当たり判定をとる
+	if (Collision::IsHitRect(BulletPos, BulletSize, Pos, PosSize))
+	{
+		player[take_damageNum].Damege(Damage);
+		player[deal_damageNum].SetBulletIsUse();
+	}
 }

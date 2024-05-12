@@ -6,12 +6,11 @@
 #define PLAYER1_PATH		"Data/Image/Player/Player1.png"
 #define PLAYER2_PATH		"Data/Image/Player/Player2.png"
 
+#define PLAYER_MAX_LIFE		(100)
+
 #define BULLETHNDL_PATH		"Data/Image/Player/FireBall.png"
 
 #define PLAYER_ANIME_NUM	(18)
-
-
-#define PLAYER_SIZE			(64)
 
 #define JUMPMAX_NUM			(2)
 #define SPEED				(4.0f)
@@ -56,7 +55,13 @@ protected:
 	//描画に使う変数
 	Hundle hundl;
 	int AnimeNum;
+	VECTOR PlayerSize;
 	
+	//プレイヤーのライフ
+	int Life;
+
+	//近接攻撃の攻撃力
+	int closeAttackDm;
 
 	//方向を決める変数
 	DIR dir;
@@ -84,7 +89,10 @@ protected:
 		int BulletAnimeIndex;
 		float Speed;
 		
+		
 	};
+	int BulletDamege;
+	VECTOR BulletSize;		//弾画像のサイズ
 	BulletInfo bulletInfo[BULLET_MAX_NUM];
 
 
@@ -102,7 +110,7 @@ protected:
 	int LoopCount;
 
 	//アクションボタン
-	int ActionButton[4];
+	int ActionButton[6];
 
 public:
 
@@ -141,10 +149,10 @@ public:
 	void MoveBullet();
 
 	//アイテムを拾う処理
-	void GetItem(VECTOR PlayerPos, VECTOR ItemPos);
+	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
 
 	//アイテムを投げる処理
-	void ThrowItem(VECTOR PlayerPos, VECTOR ItemPos);
+	void ThrowItem(VECTOR ItemPos);
 
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
@@ -155,9 +163,75 @@ public:
 		Pos = Position;
 	}
 
+	//プレイヤーの座標取得
 	VECTOR GetPlayerPos()
 	{
 		return Pos;
+	}
+
+	VECTOR GetPlayerSize()
+	{
+		return PlayerSize;
+	}
+
+	//弾の座標取得
+	VECTOR GetBulletPos()
+	{
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		{
+			return bulletInfo[i].BulletPos;
+		}
+	}
+
+	//弾の使用フラグ取得
+	bool GetBulletIsUse()
+	{
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		{
+			return bulletInfo[i].IsUse;
+		}
+	}
+
+	//弾の使用フラグ設定
+	void SetBulletIsUse()
+	{
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		{
+			bulletInfo[i].IsUse = false;
+		}
+		
+	}
+
+	//弾の横サイズ取得
+	VECTOR GetBulletSize()
+	{
+		return BulletSize;
+	}
+
+	//弾のダメージ取得
+	int GetBulletDamege()
+	{
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		{
+			return BulletDamege;
+		}
+	}
+
+	//プレイヤーのHP取得
+	int GetHP()
+	{
+		return Life;
+	}
+
+	int SetLife(int Hp)
+	{
+		return Life = Hp;
+	}
+
+	//プレイヤーのHP設定
+	void Damege(int damege)
+	{
+		Life -= damege;
 	}
 };
 
