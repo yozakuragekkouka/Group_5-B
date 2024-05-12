@@ -76,8 +76,6 @@ protected:
 	float Gravity;
 	int JunpCount;
 
-	
-
 	//弾に使う変数
 	struct BulletInfo
 	{
@@ -157,6 +155,12 @@ public:
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
 
+	//弾の最大数取得
+	int GetBulletMaxNum()
+	{
+		return BULLET_MAX_NUM;
+	}
+
 	//プレイヤーの座標設定
 	void SetPlayerPos(VECTOR Position)
 	{
@@ -198,8 +202,7 @@ public:
 		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
 			bulletInfo[i].IsUse = false;
-		}
-		
+		}	
 	}
 
 	//弾の横サイズ取得
@@ -211,10 +214,7 @@ public:
 	//弾のダメージ取得
 	int GetBulletDamege()
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return BulletDamege;
-		}
+		return BulletDamege;
 	}
 
 	//プレイヤーのHP取得

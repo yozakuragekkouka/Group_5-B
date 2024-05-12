@@ -467,7 +467,6 @@ void PLAYER::MoveBullet()
 				bulletInfo[i].IsUse = false;
 			}
 		}
-		
 	}
 }
 
