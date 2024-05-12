@@ -21,7 +21,11 @@ public:
 	void Fin();
 
 	//奥村
+	//マップ当たり判定の総合
 	void MapCollision();
+
+	//マップとプレイヤーの当たり判定の情報を
+	// GetIsGroundとGetMoveDirectionに渡す
 	void CheckCollision(int index, bool checkY);
 
 	//宮近

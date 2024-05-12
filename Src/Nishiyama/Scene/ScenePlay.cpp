@@ -186,7 +186,7 @@ void ScenePlay::CheckCollision(int index, bool checkY) {
 			bool dirArray[4] = { false, false, false, false };
 			player[index].GetMoveDirection(dirArray);
 
-			VECTOR A = { player[index].GetPlayerPos().x,player[index].GetPlayerPos().y ,0 };
+			VECTOR A = { player[index].GetNormalPlayerPos().x,player[index].GetNormalPlayerPos().y ,0 };
 			VECTOR Asize = { player[index].GetPlayerSize().x ,player[index].GetPlayerSize().y ,0};
 
 			VECTOR B = { mapIndexX * MAP_SIZE , mapIndexY * MAP_SIZE ,0 };

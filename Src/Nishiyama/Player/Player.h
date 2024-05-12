@@ -67,7 +67,7 @@ protected:
 	//方向を決める変数
 	DIR dir;
 	VECTOR Pos;
-	VECTOR NextPos;
+	VECTOR NextPos; //次のフレームのプレイヤー座標
 	VECTOR Pos1;	//左端を原点にするためだけの変数
 	VECTOR OldPos;
 
@@ -170,11 +170,12 @@ public:
 	{
 		NextPos = Position;
 	}
+	//X座標設定
 	void SetPlayerPosX(float Position)
 	{
 		NextPos.x = Position;
 	}
-
+	//Y座標設定
 	void SetPlayerPosY(float Position)
 	{
 		NextPos.y = Position;
@@ -264,30 +265,35 @@ public:
 		DamageCoolTime += AddTime;
 	}
 
-	//奥村
-	VECTOR GetNextPos()
-	{
-		return NextPos;
-	}
-
+	
 	DIR GetPlayerdir()
 	{
 		return dir;
 	}
 
+	//奥村
+	//次のフレームのプレーヤーの位置を取得
+	VECTOR GetNextPos()
+	{
+		return NextPos;
+	}
+
+	//オブジェクトの上にいるかを取得
 	bool GetIsGround()
 	{
 		return IsGround;
 	}
 
-	void SetIsGround()
-	{
-		IsGround = true;
-	}
-
 	//プレイヤーの進んでいる方向をチェック
 	void GetMoveDirection(bool* _dirArray);
 
+	//通常のプレイヤー座標を取得
+	VECTOR GetNormalPlayerPos()
+	{
+		return Pos;
+	}
+
+	//マップ当たり判定
 	void HandleCollision(int index, bool dirArray[],
 		VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY);
 };
