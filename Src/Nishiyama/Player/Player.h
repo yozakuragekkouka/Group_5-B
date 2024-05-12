@@ -67,6 +67,7 @@ protected:
 	//方向を決める変数
 	DIR dir;
 	VECTOR Pos;
+	VECTOR Pos1;	//左端を原点にするためだけの変数
 	VECTOR OldPos;
 
 	ACTIONSTATE ActionStateID;
@@ -81,6 +82,7 @@ protected:
 	struct BulletInfo
 	{
 		VECTOR BulletPos;
+		VECTOR BulletPos1;	//左端を原点にするためだけの変数
 		bool IsUse;
 		int Isdir;
 		int BulletHndl[BULLET_ANIME_NUM];
@@ -171,7 +173,7 @@ public:
 	//プレイヤーの座標取得
 	VECTOR GetPlayerPos()
 	{
-		return Pos;
+		return Pos1;
 	}
 
 	VECTOR GetPlayerSize()
@@ -184,7 +186,7 @@ public:
 	{
 		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-			return bulletInfo[i].BulletPos;
+			return bulletInfo[i].BulletPos1;
 		}
 	}
 

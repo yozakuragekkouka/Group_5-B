@@ -76,7 +76,7 @@ void ScenePlay::Step()
 				//プレイヤー1にダメージを与える
 				player[0].Damege(player[1].GetBulletDamege());
 				//ダメージクールタイムを0にする
-				player[1].SetDamageCoolTime();
+				player[0].SetDamageCoolTime();
 				//弾の使用フラグをfalseにする
 				player[1].SetBulletIsUse();
 			}
