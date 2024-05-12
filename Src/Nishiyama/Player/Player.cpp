@@ -79,7 +79,7 @@ void PLAYER::Init(int playerNumber)
 //âÊëúì«Ç›çûÇ›
 void PLAYER::Load()
 {
-	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.PlayerHndl[0]);
+	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)187 / 3, (float)382 / 6, hundl.PlayerHndl[0]);
 	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.PlayerHndl[1]);
 
 	for (int i = 0; i < BULLET_MAX_NUM; i++)
