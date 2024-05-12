@@ -3,7 +3,7 @@
 #include "../Input/Input.h"
 #include "../Collision/Collision.h"
 #include "../../Common.h"
-
+#include"../DefaultMap/DefaultMap.h"
 
 
 //初期化
@@ -46,7 +46,7 @@ void PLAYER::Init(int playerNumber)
 
 	YSpeed = 0.0f;
 	Gravity = 0.5f;
-	JunpCount = 0;
+	JumpCount = 0;
 
 	//プレイヤー１の移動キー
 	ActionButton[0] = KEY_INPUT_W;		//ジャンプ
@@ -74,6 +74,7 @@ void PLAYER::Init(int playerNumber)
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
+	Pos = { 0.0f, 0.0f, 0.0f };
 	Life = 100;
 	DamageCoolTime = 30;
 }
@@ -97,6 +98,10 @@ void PLAYER::Step()
 {
 	flameCount++;
 	OldPos = Pos;
+	Pos = NextPos;
+
+	if (!IsGround)Gravity = 0.5f;
+	else Gravity = 0.0f;
 
 	//原点を左上にする
 	Pos1.x = Pos.x - 32.0f;
@@ -109,7 +114,7 @@ void PLAYER::Step()
 	}
 
 
-	IsGround = false;
+
 
 	//移動処理
 	Move();
@@ -122,7 +127,7 @@ void PLAYER::Step()
 		ActionStateID = Stete_Jump;
 		Jump();
 	}
-	Pos.y += YSpeed;
+	NextPos.y += YSpeed;
 	YSpeed += Gravity;
 
 	//弾の発射間隔調整
@@ -186,7 +191,7 @@ void PLAYER::Draw(int playerNumber)
 	}
 	
 	//デバック
-	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
+	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JumpCount);
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
 
@@ -216,23 +221,24 @@ void PLAYER::Delete()
 void PLAYER::LimitX_Y()
 {
 	//X座標制限
-	if (Pos.x + PlayerSize.x / 2 >= SCREEN_SIZE_X)
+	if (NextPos.x + PlayerSize.x / 2 >= SCREEN_SIZE_X)
 	{
-		Pos.x = SCREEN_SIZE_X - PlayerSize.x / 2;
+		NextPos.x = SCREEN_SIZE_X - PlayerSize.x / 2;
 	}
-	else if (Pos.x - PlayerSize.x / 2 < 0.0f)
+	else if (NextPos.x - PlayerSize.x / 2 < 0.0f)
 	{
-		Pos.x = PlayerSize.x / 2;
+		NextPos.x = PlayerSize.x / 2;
 	}
 
 	//Y座標制限
 	//
-	if (Pos.y + PlayerSize.y / 2 >= SCREEN_SIZE_Y)
+	if (NextPos.y + PlayerSize.y / 2 >= SCREEN_SIZE_Y)
 	{
 		YSpeed = 0.0f;
-		Pos.y = SCREEN_SIZE_Y - PlayerSize.y / 2;
-		JunpCount = 0;
+		NextPos.y = SCREEN_SIZE_Y - PlayerSize.y / 2;
+		JumpCount = 0;
 		IsJump = false;
+		IsGround = true;
 
 		if (IsDush == false)
 		{
@@ -240,11 +246,12 @@ void PLAYER::LimitX_Y()
 		}
 
 	}
-	else if (Pos.y - PlayerSize.y / 2 < 0.0f)
+	else if (NextPos.y - PlayerSize.y / 2 < 0.0f)
 	{
-		Pos.y = PlayerSize.y / 2;
+		NextPos.y = PlayerSize.y / 2;
 		YSpeed = 0.0f;
 	}
+	else IsGround = false;
 }
 
 //移動処理
@@ -259,7 +266,7 @@ void PLAYER::Move()
 		IsDush = true;
 		dir = IsRight;
 		IsReturn = true;
-		Pos.x += SPEED;
+		NextPos.x += SPEED;
 	}
 	else if (Input::IsKeyKeep(ActionButton[1]))
 	{	
@@ -270,7 +277,7 @@ void PLAYER::Move()
 		IsDush = true;
 		dir = IsLeft;
 		IsReturn = false;
-		Pos.x -= SPEED;
+		NextPos.x -= SPEED;
 	}
 	else
 	{
@@ -281,10 +288,10 @@ void PLAYER::Move()
 //ジャンプ処理
 void PLAYER::Jump()
 {
-	if (JunpCount < JUMPMAX_NUM)
+	if (JumpCount < JUMPMAX_NUM)
 	{
 		YSpeed = -15.0f;
-		JunpCount++;
+		JumpCount++;
 	}
 }
 
@@ -343,7 +350,7 @@ void PLAYER::PulsY(int PosY, float Height)
 		puls = (Pos.y + 32.0f) - PosY;
 		Pos.y -= puls;
 		YSpeed = 0.0f;
-		JunpCount = 0;
+		JumpCount = 0;
 		IsJump = false;
 
 	}
@@ -502,5 +509,79 @@ void PLAYER::ThrowItem(VECTOR ItemPos)
 	if (IsGet == true)
 	{
 		IsGet = false;
+	}
+}
+
+
+
+// 進んでいる方向をチェック
+// 上下左右の順になっている
+void PLAYER::GetMoveDirection(bool* _dirArray) {
+	// 右方向のチェック
+	if (NextPos.x > Pos.x) {
+		_dirArray[3] = true;
+		DrawFormatString(300, 0, GetColor(255, 255, 255), "右");
+	}
+
+	// 左方向のチェック
+	if (NextPos.x < Pos.x) {
+		_dirArray[2] = true;
+		DrawFormatString(300, 17, GetColor(255, 255, 255), "左");
+
+	}
+	// 下方向のチェック
+	if (NextPos.y > Pos.y) {
+		_dirArray[1] = true;
+		DrawFormatString(300, 34, GetColor(255, 255, 255), "下");
+
+	}
+
+	// 上方向のチェック
+	if (NextPos.y < Pos.y) {
+		_dirArray[0] = true;
+		DrawFormatString(300, 51, GetColor(255, 255, 255), "上");
+
+	}
+}
+
+void PLAYER::HandleCollision(int index, bool dirArray[],
+	VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY) {
+	if (checkY) {
+		if (dirArray[0]) {
+			// 上方向に移動中に下のオブジェクトと衝突した場合
+			float overlap = (B.y + Bsize.y) - A.y;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+			// めり込んだ分だけプレイヤーの位置を上に戻す
+			SetPlayerPosY(A.y + overlap);
+		}
+		if (dirArray[1]) {
+			// 下方向に移動中に上のオブジェクトと衝突した場合
+			float overlap = (A.y + Asize.y) - B.y;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+			// めり込んだ分だけプレイヤーの位置を下に戻す
+			SetPlayerPosY(A.y - overlap);
+			IsGround = true;
+			IsJump = false;
+			JumpCount = 0;
+		}
+		else IsGround = false;
+	}
+	else {
+		if (dirArray[2]) {
+			// 左方向に移動中に右のオブジェクトと衝突した場合
+			float overlap = (B.x + Bsize.x) - A.x;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+
+			// めり込んだ分だけプレイヤーの位置を左に戻す
+			SetPlayerPosX(A.x + overlap);
+		}
+		if (dirArray[3]) {
+			// 右方向に移動中に左のオブジェクトと衝突した場合
+			float overlap = (A.x + Asize.x) - B.x;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+
+			// めり込んだ分だけプレイヤーの位置を右に戻す
+			SetPlayerPosX(A.x - overlap);
+		}
 	}
 }

@@ -67,6 +67,7 @@ protected:
 	//方向を決める変数
 	DIR dir;
 	VECTOR Pos;
+	VECTOR NextPos;
 	VECTOR Pos1;	//左端を原点にするためだけの変数
 	VECTOR OldPos;
 
@@ -76,7 +77,7 @@ protected:
 	//ジャンプに使う変数
 	float YSpeed;
 	float Gravity;
-	int JunpCount;
+	int JumpCount;
 
 	//弾に使う変数
 	struct BulletInfo
@@ -167,9 +168,17 @@ public:
 	//プレイヤーの座標設定
 	void SetPlayerPos(VECTOR Position)
 	{
-		Pos = Position;
+		NextPos = Position;
+	}
+	void SetPlayerPosX(float Position)
+	{
+		NextPos.x = Position;
 	}
 
+	void SetPlayerPosY(float Position)
+	{
+		NextPos.y = Position;
+	}
 	//プレイヤーの座標取得
 	VECTOR GetPlayerPos()
 	{
@@ -254,5 +263,32 @@ public:
 	{
 		DamageCoolTime += AddTime;
 	}
+
+	//奥村
+	VECTOR GetNextPos()
+	{
+		return NextPos;
+	}
+
+	DIR GetPlayerdir()
+	{
+		return dir;
+	}
+
+	bool GetIsGround()
+	{
+		return IsGround;
+	}
+
+	void SetIsGround()
+	{
+		IsGround = true;
+	}
+
+	//プレイヤーの進んでいる方向をチェック
+	void GetMoveDirection(bool* _dirArray);
+
+	void HandleCollision(int index, bool dirArray[],
+		VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY);
 };
 

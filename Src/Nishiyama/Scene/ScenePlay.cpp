@@ -45,6 +45,9 @@ void ScenePlay::Step()
 	{
 		player[1].Step();
 	}
+	//マップとの当たり判定
+	MapCollision();
+
 	//近接攻撃の当たり判定
 	
 	//弾の当たり判定--------------------------------------------------------------
@@ -161,5 +164,44 @@ void ScenePlay::IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VEC
 	{
 		player[take_damageNum].Damege(Damage);
 		player[deal_damageNum].SetBulletIsUse();
+	}
+}
+
+
+//奥村
+// マップの当たり判定
+void ScenePlay::MapCollision() {
+	for (int index = 0; index < PlayNumber; index++) {
+		CheckCollision(index, true);  // Y方向の当たり判定
+		CheckCollision(index, false); // X方向の当たり判定
+	}
+}
+
+void ScenePlay::CheckCollision(int index, bool checkY) {
+	DrawFormatString(0, 300, GetColor(255, 255, 255), "%f", player[0].GetNextPos().y);
+	for (int mapIndexY = 0; mapIndexY < MAP_DATA_Y; mapIndexY++) {
+		for (int mapIndexX = 0; mapIndexX < MAP_DATA_X; mapIndexX++) {
+			if (CMap->m_MapData[mapIndexY][mapIndexX] == 0) continue;
+
+			bool dirArray[4] = { false, false, false, false };
+			player[index].GetMoveDirection(dirArray);
+
+			VECTOR A = { player[index].GetPlayerPos().x,player[index].GetPlayerPos().y ,0 };
+			VECTOR Asize = { player[index].GetPlayerSize().x ,player[index].GetPlayerSize().y ,0};
+
+			VECTOR B = { mapIndexX * MAP_SIZE , mapIndexY * MAP_SIZE ,0 };
+			VECTOR Bsize = { MAP_SIZE ,MAP_SIZE ,0 };
+
+			if (checkY) {
+				A.y = player[index].GetNextPos().y;
+			}
+			else {
+				A.x = player[index].GetNextPos().x;
+			}
+			if (Collision::IsHitRect(A, B, Asize, Bsize)) {
+				DrawFormatString(0, 400, GetColor(255, 255, 255), "%f", B.x);
+				player[index].HandleCollision(index, dirArray, A, B, Asize, Bsize, checkY);
+			}
+		}
 	}
 }
