@@ -3,6 +3,8 @@
 #include "../Input/Input.h"
 #include "SceneResult.h"
 
+bool Win1P = false;
+
 //ƒNƒŠƒA‰Šú‰»
 void SceneResult::Init()
 {

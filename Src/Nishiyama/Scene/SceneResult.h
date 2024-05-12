@@ -22,6 +22,9 @@ private:
 	int Win2P_Hndl;
 	int WinCPU_Hndl;
 
+	bool Win1P;
+	bool Win2P;
+
 public:
 	void Init();
 
@@ -31,3 +34,5 @@ public:
 
 	void Fin();
 };
+
+extern bool Win1P;
