@@ -38,6 +38,7 @@ void PLAYER::Init(int playerNumber)
 		bulletInfo[i].BulletReturn = true;
 		bulletInfo[i].IsUse = false;
 		bulletInfo[i].BulletPos = { 0.0f, 0.0f, 0.0f };
+		bulletInfo[i].BulletPos1 = { 0.0f, 0.0f, 0.0f };
 		bulletInfo[i].Speed = 0.0f;
 	}
 	BulletDamege = 5;
@@ -74,6 +75,7 @@ void PLAYER::Init(int playerNumber)
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
 	Life = 100;
+	DamageCoolTime = 30;
 }
 
 //âÊëúì«Ç›çûÇ›
@@ -96,6 +98,17 @@ void PLAYER::Step()
 	flameCount++;
 	OldPos = Pos;
 
+	//å¥ì_Çç∂è„Ç…Ç∑ÇÈ
+	Pos1.x = Pos.x - 32.0f;
+	Pos1.y = Pos.y - 32.0f;
+	Pos1.z = 0.0;
+	for (int i = 0; i < BULLET_MAX_NUM; i++)
+	{
+		bulletInfo[i].BulletPos1.x = bulletInfo[i].BulletPos.x - 80.0f;
+		bulletInfo[i].BulletPos1.y = bulletInfo[i].BulletPos.y - 40.0f;
+	}
+
+
 	IsGround = false;
 
 	//à⁄ìÆèàóù
@@ -111,8 +124,6 @@ void PLAYER::Step()
 	}
 	Pos.y += YSpeed;
 	YSpeed += Gravity;
-
-
 
 	//íeÇÃî≠éÀä‘äuí≤êÆ
 	BulletCount();
@@ -467,7 +478,6 @@ void PLAYER::MoveBullet()
 				bulletInfo[i].IsUse = false;
 			}
 		}
-		
 	}
 }
 

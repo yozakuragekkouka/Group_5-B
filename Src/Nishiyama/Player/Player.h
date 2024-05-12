@@ -59,6 +59,7 @@ protected:
 	
 	//プレイヤーのライフ
 	int Life;
+	int DamageCoolTime;
 
 	//近接攻撃の攻撃力
 	int closeAttackDm;
@@ -66,6 +67,7 @@ protected:
 	//方向を決める変数
 	DIR dir;
 	VECTOR Pos;
+	VECTOR Pos1;	//左端を原点にするためだけの変数
 	VECTOR OldPos;
 
 	ACTIONSTATE ActionStateID;
@@ -76,12 +78,11 @@ protected:
 	float Gravity;
 	int JunpCount;
 
-	
-
 	//弾に使う変数
 	struct BulletInfo
 	{
 		VECTOR BulletPos;
+		VECTOR BulletPos1;	//左端を原点にするためだけの変数
 		bool IsUse;
 		int Isdir;
 		int BulletHndl[BULLET_ANIME_NUM];
@@ -157,6 +158,12 @@ public:
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
 
+	//弾の最大数取得
+	int GetBulletMaxNum()
+	{
+		return BULLET_MAX_NUM;
+	}
+
 	//プレイヤーの座標設定
 	void SetPlayerPos(VECTOR Position)
 	{
@@ -166,7 +173,7 @@ public:
 	//プレイヤーの座標取得
 	VECTOR GetPlayerPos()
 	{
-		return Pos;
+		return Pos1;
 	}
 
 	VECTOR GetPlayerSize()
@@ -179,7 +186,7 @@ public:
 	{
 		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-			return bulletInfo[i].BulletPos;
+			return bulletInfo[i].BulletPos1;
 		}
 	}
 
@@ -198,8 +205,7 @@ public:
 		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
 			bulletInfo[i].IsUse = false;
-		}
-		
+		}	
 	}
 
 	//弾の横サイズ取得
@@ -211,10 +217,7 @@ public:
 	//弾のダメージ取得
 	int GetBulletDamege()
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return BulletDamege;
-		}
+		return BulletDamege;
 	}
 
 	//プレイヤーのHP取得
@@ -232,6 +235,24 @@ public:
 	void Damege(int damege)
 	{
 		Life -= damege;
+	}
+
+	//ダメージクールタイム取得
+	int GetDamegeCoolTime()
+	{
+		return DamageCoolTime;
+	}
+
+	//ダメージクールタイム設定
+	void SetDamageCoolTime()
+	{
+		DamageCoolTime = 0;
+	}
+
+	//ダメージクールタイム増加
+	void AddDamageCoolTime(int AddTime)
+	{
+		DamageCoolTime += AddTime;
 	}
 };
 
