@@ -1,453 +1,325 @@
-//奥村
+#include "DxLib.h"
+#include "Enemy.h"
+//#include "../Player/player.h"
+#include <math.h>
+#include <cmath>
+#include<vector>
+#include"../Map/Map.h"
+
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <map>
+#include <algorithm>
+
+
+//画像パス
+#define PLAYER_PATH "Data/Image/Enemy/player_div.png"
+
+//プレイヤーが出していい最高スピード
+#define PLAYER_SPEED_MAX 6
+
+void Enemy::Step() {
+	Participate(dvd);
+	m_pos = m_next_pos;
+	m_next_pos.y += grav;
+	Update();
+	ConnectToNearestRival();
+	NearsRival();
+	Jump();
+}
+
+Enemy::Enemy()
+{
+	m_move_vec = { 0 };
+	m_next_pos = { 0 };
+	m_next_pos = { 0 };
+}
+
+Enemy::~Enemy() {}
+
+//初期化
+void Enemy::Init(int num) {
+
+
+	if (num == 0)
+		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
+				  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
+	if (num == 1)
+		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
+			  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
+	if (num == 2)
+		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
+				  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
+	if (num == 3)
+		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
+			  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
+	//画像読み込み
+	LoadDivGraph("Data/Image/Player/player_div.png", 12, 4, 3, 64, 64, EnemyHan);
+	speed = 0;
+	animIndex = 1;
+	enemyStopFlag = false;
+
+	Walk_Sound[0] = LoadSoundMem("Data/Sound/ashi/0.mp3");
+	Walk_Sound[1] = LoadSoundMem("Data/Sound/ashi/1.mp3");
+	Walk_Sound[2] = LoadSoundMem("Data/Sound/ashi/2.mp3");
+	Walk_Sound[3] = LoadSoundMem("Data/Sound/ashi/3.mp3");
+	Walk_Sound[4] = LoadSoundMem("Data/Sound/ashi/4.mp3");
+	Walk_Sound[5] = LoadSoundMem("Data/Sound/ashi/5.mp3");
+	Walk_Sound[6] = LoadSoundMem("Data/Sound/ashi/6.mp3");
+	Walk_Sound[7] = LoadSoundMem("Data/Sound/ashi/7.mp3");
+	Walk_Sound[8] = LoadSoundMem("Data/Sound/ashi/8.mp3");
+	Walk_Sound[9] = LoadSoundMem("Data/Sound/ashi/9.mp3");
+	Walk_Sound[10] = LoadSoundMem("Data/Sound/ashi/10.mp3");
+	Walk_Sound[11] = LoadSoundMem("Data/Sound/ashi/11.mp3");
+	Walk_Sound[12] = LoadSoundMem("Data/Sound/ashi/12.mp3");
+
+	grav = 15.0;
+
+	radius = 10.0;
+
+	currentRivalIndex = -1;
+	nearestRivalIndex = -1;
+	for (int i = 0; i < CHARACTER_MAX_NUM; i++)
+	{
+		dvd[i] = { (float)GetRand(SCREEN_SIZE_X / 2),
+			(float)GetRand(SCREEN_SIZE_Y / 2),0 };
+		next_dvd[i] = { (float)(10 * i) + (float)2.0,(float)(10 * i) + (float)2.0,0 };
+
+		Rival[i] = { 0 };
+	}
+
+	PlayerToParticipate = -1;
+
+	isJump = true;
+	jumpPower = 20;
+}
+
+void Enemy::Participate(VECTOR Player[CHARACTER_MAX_NUM])
+{
+	for (int j = 0; j < CHARACTER_MAX_NUM; j++)
+	{
+		if (j < PlayerToParticipate)
+			Rival[j] = Player[j];
+		Rival[j] = dvd[j];
+	}
+}
+
+void Enemy::ConnectToNearestRival()
+{
+	nearestRivalIndex = -1;
+	double minDistance = DBL_MAX; // 最小距離を非常に大きな値で初期化
+
+	// 全ての敵との距離を計算し、最も近い敵を見つける
+	for (int i = 0; i < CHARACTER_MAX_NUM; ++i) {
+		double distance = CalculateDistance(m_pos.x, m_pos.y, Rival[i].x, Rival[i].y);
+		if (distance < minDistance) {
+			minDistance = distance;
+			nearestRivalIndex = i;
+		}
+	}
+	// 最も近い敵が見つかった場合、現在対応する敵を更新
+	if (nearestRivalIndex != -1)currentRivalIndex = nearestRivalIndex;
+}
+
+
+void Enemy::Update() {
+	for (int i = 0; i < CHARACTER_MAX_NUM; i++)
+	{
+		dvd[i].x += next_dvd[i].x;
+		dvd[i].y += next_dvd[i].y;
+		// 画面の端に達したら反射
+		if (dvd[i].x < radius || dvd[i].x > SCREEN_SIZE_X - radius)
+			next_dvd[i].x = -next_dvd[i].x;
+		if (dvd[i].y < radius || dvd[i].y > SCREEN_SIZE_Y - radius)
+			next_dvd[i].y = -next_dvd[i].y;
+	}
+}
+
+void Enemy::NearsRival()
+{
+	int dx_player = dvd[currentRivalIndex].x - m_pos.x - ((float)EnemySize / 2);
+	int dy_player = dvd[currentRivalIndex].y - m_pos.y - ((float)EnemySize / 2);
+	float distance_player = sqrt(dx_player * dx_player + dy_player * dy_player);
+
+	float angle = atan2(dy_player, dx_player); // 敵とキャラクターの角度
+	speed = MaxEnemySpeed;
+
+	m_next_pos.x += speed * cos(angle); // X方向の移動
+}
+//// 一番近い敵に近づく
+//void Enemy::NearsRival()
+//{
+//	int dx_player = dvd[currentRivalIndex].x - m_pos.x - ((float)EnemySize / 2);
+//	int dy_player = dvd[currentRivalIndex].y - m_pos.y - ((float)EnemySize / 2);
+//	float distance_player = sqrt(dx_player * dx_player + dy_player * dy_player);
+//
+//	float angle = atan2(dy_player, dx_player); // 敵とキャラクターの角度
+//	speed = MaxEnemySpeed;
+//
+//	// X方向の移動
+//	m_next_pos.x += speed * cos(angle);
+//
+//	// ブロックが間にあるかどうかをチェック
+//	if (IsBlockBetween(m_pos.x, m_pos.y, dvd[currentRivalIndex].x, dvd[currentRivalIndex].y)) {
+//		SetJump(); // ブロックを越えるためにジャンプ
+//		
+//	}
+//}
+//
+//// ブロックが間にあるかどうかをチェックする関数
+//bool Enemy::IsBlockBetween(float x1, float y1, float x2, float y2) {
+//	// 2点間の距離を計算
+//	float distance = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+//
+//	// チェックするポイントの数を決定（例: 距離に応じて）
+//	int numberOfPoints = static_cast<int>(distance / CHECK_INTERVAL);
+//
+//	for (int i = 0; i <= numberOfPoints; ++i) {
+//		// 線形補間で現在のチェックポイントを計算
+//		float lerpFactor = static_cast<float>(i) / numberOfPoints;
+//		float currentX = lerp(x1, x2, lerpFactor);
+//		float currentY = lerp(y1, y2, lerpFactor);
+//
+//		// マップデータの座標系に変換
+//		int gridX = static_cast<int>(currentX / MAP_SIZE);
+//		int gridY = static_cast<int>(currentY / MAP_SIZE);
+//
+//		// マップデータの範囲内かどうかをチェック
+//		if (gridX < 0 || gridX >= MAP_DATA_X || gridY < 0 || gridY >= MAP_DATA_Y) {
+//			continue; // 範囲外なら次のポイントへ
+//		}
+//
+//		// マップデータからブロックの有無を取得
+//		if (m_MapData[gridY][gridX] != 0) { // 0以外の値はブロックがあることを示す
+//			return true; // ブロックが見つかった
+//		}
+//	}
+//
+//	return false; // ブロックは見つからなかった
+//}
+
+void Enemy::Jump()
+{
+	//ジャンプ処理
+	if (!isJump) {
+		jumpPower = 40.0;
+		//一番近い敵が上にいる場合ジャンプ
+		if (dvd[currentRivalIndex].y < m_pos.y - EnemySize)
+			isJump = true;
+	}
+	if (isJump) {
+		m_next_pos.y -= jumpPower;
+		jumpPower -= 1.2;
+		if (jumpPower <= 0) {
+			jumpPower = 0;
+		}
+	}
+}
 
 
 
-//#include "Enemy.h"
-//#include "../Scene/Scene.h"
-//#include "../Input/Input.h"
-//#include "../../Common.h"
-//
-//
-////初期化
-//void PLAYER::Init(int playerNumber)
-//{
-//	memset(&hundl, -1, sizeof(Hundle));
-//
-//	flameCount = 0;
-//	AnimeNum = 0;
-//
-//	//playernumは遊ぶ人数で変える
-//
-//	//プレイヤー1の初期化
-//	dir = IsLeft;
-//	ActionStateID = State_Normal;
-//
-//
-//	IsJump = false;
-//	IsDush = false;
-//	IsReturn = true;
-//	IsGround = false;
-//
-//	for (int i = 0; i < BULLET_MAX_NUM; i++)
-//	{
-//		bulletInfo[i].BulletReturn = true;
-//		bulletInfo[i].IsUse = false;
-//		bulletInfo[i].BulletPos = { 0.0f, 0.0f, 0.0f };
-//		bulletInfo[i].Speed = 0.0f;
-//	}
-//
-//	YSpeed = 0.0f;
-//	Gravity = 0.5f;
-//	JunpCount = 0;
-//
-//	//プレイヤー１の移動キー
-//	ActionButton[0] = KEY_INPUT_W;		//ジャンプ
-//	ActionButton[1] = KEY_INPUT_A;		//左移動
-//	ActionButton[2] = KEY_INPUT_D;		//右移動
-//	ActionButton[3] = KEY_INPUT_SPACE;	//発射ボタン
-//
-//	if (playerNumber == 2)
-//	{
-//		dir = IsLeft;
-//		IsReturn = false;
-//
-//		//プレイヤー2の移動キー
-//		ActionButton[0] = KEY_INPUT_UP;		//ジャンプ
-//		ActionButton[1] = KEY_INPUT_LEFT;	//左移動
-//		ActionButton[2] = KEY_INPUT_RIGHT;	//右移動
-//		ActionButton[3] = KEY_INPUT_RSHIFT;	//発射ボタン
-//	}
-//
-//	OldPos = { 0.0f, 0.0f, 0.0f };
-//}
-//
-////画像読み込み
-//void PLAYER::Load()
-//{
-//	LoadDivGraph(PLAYER1_PATH, 18, 3, 6, (float)190 / 3, (float)383 / 6, hundl.PlayerHndl[0]);
-//	LoadDivGraph(PLAYER2_PATH, 18, 3, 6, (float)189 / 3, (float)384 / 6, hundl.PlayerHndl[1]);
-//
-//	for (int i = 0; i < BULLET_MAX_NUM; i++)
-//	{
-//		LoadDivGraph(BULLETHNDL_PATH, 24, 6, 4, 160, 80, bulletInfo[i].BulletHndl);
-//	}
-//
-//	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
-//}
-//
-////通常処理
-//void PLAYER::Step()
-//{
-//	flameCount++;
-//	OldPos = Pos;
-//
-//	IsGround = false;
-//
-//	//移動処理
-//	Move();
-//
-//	//ジャンプ処理
-//	if (Input::IsKeyPush(ActionButton[0]))
-//	{
-//		//状態をジャンプにする
-//		IsJump = true;
-//		ActionStateID = Stete_Jump;
-//		Jump();
-//	}
-//	Pos.y += YSpeed;
-//	YSpeed += Gravity;
-//
-//
-//
-//	//弾の発射間隔調整
-//	BulletCount();
-//
-//	//弾の発射処理
-//	if (Input::IsKeyPush(ActionButton[3]))
-//	{
-//		BulletShot();
-//	}
-//	//弾の移動
-//	MoveBullet();
-//
-//	//移動制限
-//	LimitX_Y();
-//
-//	//プレイヤーアニメ切り替え
-//	PlayerAnimetion();
-//
-//	OldActionState = ActionStateID;
-//}
-//
-////描画処理
-//void PLAYER::Draw(int playerNumber)
-//{
-//
-//	//プレイヤーの描画
-//	DrawRotaGraph((int)Pos.x, (int)Pos.y, 1.0f, 0.0f, hundl.PlayerHndl[playerNumber][AnimeNum], true, IsReturn, false);
-//
-//	//弾の描画
-//	for (int i = 0; i < BULLET_MAX_NUM; i++)
-//	{
-//		//弾が使用中なら描画する
-//		if (bulletInfo[i].IsUse)
-//		{
-//			DrawRotaGraph(bulletInfo[i].BulletPos.x, bulletInfo[i].BulletPos.y,
-//				1.0, 0.0, bulletInfo[i].BulletHndl[bulletInfo[i].BulletAnimeIndex], true, bulletInfo[i].BulletReturn, false);
-//
-//			if (flameCount % 4 == 0)
-//			{
-//				bulletInfo[i].BulletAnimeIndex++;
-//				if (bulletInfo[i].BulletAnimeIndex == 6)
-//				{
-//					bulletInfo[i].BulletAnimeIndex = 0;
-//				}
-//			}
-//		}
-//	}
-//
-//	//デバック
-//	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
-//	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
-//	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
-//	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
-//}
-//
-////後処理
-//void PLAYER::Delete()
-//{
-//
-//}
-//
-////移動制限
-//void PLAYER::LimitX_Y()
-//{
-//	//X座標制限
-//	if (Pos.x + PLAYER_SIZE / 2 >= SCREEN_SIZE_X)
-//	{
-//		Pos.x = SCREEN_SIZE_X - PLAYER_SIZE / 2;
-//	}
-//	else if (Pos.x - PLAYER_SIZE / 2 < 0.0f)
-//	{
-//		Pos.x = PLAYER_SIZE / 2;
-//	}
-//
-//	//Y座標制限
-//	//
-//	if (Pos.y + PLAYER_SIZE / 2 >= SCREEN_SIZE_Y)
-//	{
-//		YSpeed = 0.0f;
-//		Pos.y = SCREEN_SIZE_Y - PLAYER_SIZE / 2;
-//		JunpCount = 0;
-//		IsJump = false;
-//
-//		if (IsDush == false)
-//		{
-//			ActionStateID = State_Normal;
-//		}
-//
-//	}
-//	else if (Pos.y - PLAYER_SIZE / 2 < 0.0f)
-//	{
-//		Pos.y = PLAYER_SIZE / 2;
-//		YSpeed = 0.0f;
-//	}
-//}
-//
-////移動処理
-//void PLAYER::Move()
-//{
-//	if (Input::IsKeyKeep(ActionButton[2]))
-//	{
-//		if (IsJump == false)
-//		{
-//			ActionStateID = State_Dush;
-//		}
-//		IsDush = true;
-//		dir = IsRight;
-//		IsReturn = true;
-//		Pos.x += SPEED;
-//	}
-//	else if (Input::IsKeyKeep(ActionButton[1]))
-//	{
-//		if (IsJump == false)
-//		{
-//			ActionStateID = State_Dush;
-//		}
-//		IsDush = true;
-//		dir = IsLeft;
-//		IsReturn = false;
-//		Pos.x -= SPEED;
-//	}
-//	else
-//	{
-//		IsDush = false;
-//	}
-//}
-//
-////ジャンプ処理
-//void PLAYER::Jump()
-//{
-//	if (JunpCount < JUMPMAX_NUM)
-//	{
-//		YSpeed = -15.0f;
-//		JunpCount++;
-//	}
-//}
-//
-////ダッシュアニメ
-//void PLAYER::DushAnime()
-//{
-//	if (flameCount % 4 == 0)
-//	{
-//		AnimeNum++;
-//		if (AnimeNum == 6)
-//		{
-//			AnimeNum = 0;
-//		}
-//	}
-//}
-//
-//void PLAYER::JumpAnime()
-//{
-//	//降下中
-//	if (YSpeed > 0.0f)
-//	{
-//		AnimeNum = 7;
-//	}
-//	//上昇中
-//	else if (YSpeed < 0.0f)
-//	{
-//		AnimeNum = 6;
-//	}
-//}
-//
-////Xの当たり判定
-//void PLAYER::PulsX(int PosX, float Width)
-//{
-//	//左からの当たり判定
-//	if (dir == IsLeft)
-//	{
-//		float puls = 0.0f;
-//		puls = (Pos.x + 32.0f) - PosX;
-//		Pos.x -= puls;
-//	}
-//	//右からの当たり判定
-//	else if (dir == IsRight)
-//	{
-//		float puls = 0.0f;
-//		puls = (PosX + Width) - (Pos.x - 32.0f);
-//		Pos.x += puls;
-//	}
-//}
-////Yの当たり判定
-//void PLAYER::PulsY(int PosY, float Height)
-//{
-//	//上方向からの当たり判定
-//	if (YSpeed > 0.0f)
-//	{
-//		float puls = 0.0f;
-//		puls = (Pos.y + 32.0f) - PosY;
-//		Pos.y -= puls;
-//		YSpeed = 0.0f;
-//		JunpCount = 0;
-//		IsJump = false;
-//
-//	}
-//	//下方向からの当たり判定
-//	else if (YSpeed < 0.0f)
-//	{
-//		float puls = 0.0f;
-//		puls = (PosY + Height) - (Pos.y - 32.0f);
-//		Pos.y += puls;
-//		YSpeed = -0.5f;
-//	}
-//}
-//
-//
-////アニメーション切り替え処理
-//void PLAYER::PlayerAnimetion()
-//{
-//	switch (ActionStateID)
-//	{
-//	case State_Normal:
-//		if (ActionStateID != OldActionState)
-//		{
-//			AnimeNum = 15;
-//		}
-//
-//		//待機モーション
-//		if (flameCount % 8 == 0)
-//		{
-//			AnimeNum++;
-//			if (AnimeNum > 17)
-//			{
-//				AnimeNum = 14;
-//			}
-//		}
-//
-//		break;
-//	case State_Dush:
-//		if (ActionStateID != OldActionState)
-//		{
-//			AnimeNum = 0;
-//		}
-//		if (IsJump == false)
-//		{
-//			//ダッシュ
-//			DushAnime();
-//		}
-//
-//		break;
-//	case Stete_Jump:
-//		//ジャンプ
-//		if (IsJump == true)
-//		{
-//			JumpAnime();
-//		}
-//
-//		break;
-//
-//	case State_Atack:
-//		//攻撃中
-//
-//
-//	default:
-//		break;
-//	}
-//}
-//
-////弾の発射間隔調整
-//void PLAYER::BulletCount()
-//{
-//	LoopCount++;
-//	if (LoopCount > SHOT_INTERVAL)
-//	{
-//		LoopCount = SHOT_INTERVAL;
-//	}
-//}
-//
-////弾の発射処理
-//void PLAYER::BulletShot()
-//{
-//	for (int i = 0; i < BULLET_MAX_NUM; i++)
-//	{
-//		if (!bulletInfo[i].IsUse)
-//		{
-//			bulletInfo[i].BulletAnimeIndex = 0;
-//			bulletInfo[i].IsUse = true;
-//
-//			switch (dir)
-//			{
-//			case IsLeft:
-//				bulletInfo[i].BulletPos.x = Pos.x + 5.0f;
-//				bulletInfo[i].BulletPos.y = Pos.y;
-//				bulletInfo[i].BulletPos.z = 0.0f;
-//
-//				bulletInfo[i].Speed = -5.0f;
-//				bulletInfo[i].Isdir = IsLeft;
-//				bulletInfo[i].BulletReturn = true;
-//
-//				break;
-//
-//			case IsRight:
-//				bulletInfo[i].BulletPos.x = Pos.x - 5.0f;
-//				bulletInfo[i].BulletPos.y = Pos.y;
-//				bulletInfo[i].BulletPos.z = 0.0f;
-//
-//				bulletInfo[i].Speed = 5.0f;
-//				bulletInfo[i].Isdir = IsRight;
-//				bulletInfo[i].BulletReturn = false;
-//				break;
-//
-//			default:
-//				break;
-//			}
-//
-//			//玉発射間隔を初期化
-//			LoopCount = 0;
-//			break;
-//		}
-//	}
-//}
-//
-////弾の移動
-//void PLAYER::MoveBullet()
-//{
-//	for (int i = 0; i < BULLET_MAX_NUM; i++)
-//	{
-//		if (bulletInfo[i].IsUse == true)
-//		{
-//			bulletInfo[i].BulletPos.x += bulletInfo[i].Speed;
-//
-//			//画面外に出たらフラグを折る
-//			if (bulletInfo[i].BulletPos.x < 0 || bulletInfo[i].BulletPos.x > SCREEN_SIZE_X)
-//			{
-//				bulletInfo[i].IsUse = false;
-//			}
-//		}
-//
-//	}
-//}
-//
-//
-////アイテムを拾う処理
-//void PLAYER::GetItem(VECTOR PlayerPos, VECTOR ItemPos)
-//{
-//	//当たり判定をとる
-//
-//	//当たったらアイテムをプレイヤーの腕付近に配置する
-//
-//	//取得フラグをオンにする
-//	IsGet = true;
-//}
-//
-////アイテムを投げる処理
-//void PLAYER::ThrowItem(VECTOR PlayerPos, VECTOR ItemPos)
-//{
-//	//もしフラグがオンなら投げる
-//	if (IsGet == true)
-//	{
-//
-//	}
-//}
+void Enemy::Fin()
+{
+}
+
+void Enemy::Draw() {
+	//プレイヤーを描画
+	if (speed == 0.0 && !EnemyGoalFlag)
+	{
+		changeAnimFlame = 10;
+		animFlameCount++;
+		if (animFlameCount >= changeAnimFlame) {
+			animFlameCount = 0;
+			animIndex++;
+			if (animIndex >= 4) {
+				animIndex = 0;
+			}
+			else if (animIndex <= 0) {
+				animIndex = 3;
+			}
+		}
+	}
+	else if (speed != 0.0 && !EnemyGoalFlag)
+	{
+		changeAnimFlame = 6;
+		animFlameCount++;
+		if (animFlameCount >= changeAnimFlame) {
+			animFlameCount = 0;
+			animIndex++;
+			if (animIndex >= 8) {
+				animIndex = 4;
+			}
+			else if (animIndex <= 4) {
+				animIndex = 7;
+			}
+		}
+	}
+	else
+	{
+		changeAnimFlame = 10;
+		animFlameCount++;
+		if (animFlameCount >= changeAnimFlame) {
+			animFlameCount = 0;
+			animIndex++;
+			if (animIndex >= 10) {
+				animIndex = 8;
+			}
+			else if (animIndex <= 8) {
+				animIndex = 9;
+			}
+		}
+	}
+	SetDrawBlendMode(DX_BLENDMODE_INVSRC, 255);
+	DrawGraph(m_pos.x, m_pos.y, EnemyHan[animIndex], true);
+	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+	for (int i = 0; i < CHARACTER_MAX_NUM; i++)
+	{
+		DrawCircle(dvd[i].x, dvd[i].y, radius, GetColor(255, 255, 255), TRUE);
+	}
+	if (SCREEN_SIZE_X<m_pos.x &&
+		0>m_pos.x &&
+		SCREEN_SIZE_Y<m_pos.y &&
+		0>m_pos.y)
+		DrawString(0, 0, "外に出た", GetColor(255, 0, 0));
+	DrawFormatString(0, 17, GetColor(255, 0, 0), "x=%f\ny=%f", m_pos.x, m_pos.y);
+	DrawFormatString(0, 51, GetColor(255, 0, 0), "x=%f\ny=%f", m_next_pos.x, m_next_pos.y);
+}
+
+// 進んでいる方向をチェック
+// 上下左右の順になっている
+void Enemy::GetMoveDirection(bool* _dirArray) {
+	// 右方向のチェック
+	if (GetNextEnemyPosX() > GetEnemyPosX()) {
+		_dirArray[3] = true;
+	}
+
+	// 左方向のチェック
+	if (GetNextEnemyPosX() < GetEnemyPosX()) {
+		_dirArray[2] = true;
+	}
+	// 下方向のチェック
+	if (GetNextEnemyPosY() > GetEnemyPosY()) {
+		_dirArray[1] = true;
+	}
+
+	// 上方向のチェック
+	if (GetNextEnemyPosY() < GetEnemyPosY()) {
+		_dirArray[0] = true;
+	}
+}
+
+float Enemy::lerp(float start, float end, float t) {
+	return start + t * (end - start);
+}
+
+void Enemy::SetEnemyOnSwitchTrue()
+{
+	EnemyOnSwitch = true;
+}
+
+void Enemy::SetEnemyOnSwitchFalse()
+{
+	EnemyOnSwitch = false;
+}
