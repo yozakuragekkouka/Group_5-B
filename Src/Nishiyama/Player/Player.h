@@ -19,6 +19,10 @@
 #define BULLET_ANIME_NUM	(24)
 #define SHOT_INTERVAL		(100)
 
+extern bool IsPlayer1Win;
+extern bool	IsPlayer2Win;
+extern bool IsCPUWin;
+
 struct Hundle
 {
 	int PlayerHndl[2][PLAYER_ANIME_NUM];
@@ -108,11 +112,6 @@ protected:
 	bool IsJump;
 	bool IsGround;
 	bool IsAttack;
-
-	//èüóòÉtÉâÉO
-	bool IsPlayer1Win;
-	bool IsPlayer2Win;
-	bool IsCPUWin;
 
 	int flameCount;
 	int LoopCount;

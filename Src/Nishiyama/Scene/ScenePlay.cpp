@@ -107,13 +107,19 @@ void ScenePlay::Step()
 		{
 			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
 		}
+		//プレイヤー2のHPがなくなったとき
 		if (player[1].GetHP() <= 0)
 		{
-			player[1].SetPlayer1Win();
+			IsPlayer1Win = true;
+			IsPlayer2Win = false;
+			IsCPUWin = false;
 		}
+		//プレイヤー1のHPがなくなったとき
 		if (player[0].GetHP() <= 0)
 		{
-			player[0].SetPlayer2Win();
+			IsPlayer2Win = true;
+			IsPlayer1Win = false;
+			IsCPUWin = false;
 		}
 	}
 }

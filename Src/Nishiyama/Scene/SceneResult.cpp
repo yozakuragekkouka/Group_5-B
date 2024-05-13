@@ -65,11 +65,11 @@ void SceneResult::Draw()
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
 
-	if (Player.GetPlayer1Win())
+	if (IsPlayer1Win == true)
 	{
 		DrawRotaGraph(Win1P_x, Win1P_y, 0.7, 0.0, Win1P_Hndl, true);
 	}
-	if (Player.GetPlayer2Win())
+	if (IsPlayer2Win == true)
 	{
 		DrawRotaGraph(Win2P_x, Win2P_y, 0.7, 0.0, Win2P_Hndl, true);
 	}
@@ -79,5 +79,7 @@ void SceneResult::Draw()
 //ÉNÉäÉAå„èàóù
 void SceneResult::Fin()
 {
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;
+
 }

@@ -6,6 +6,11 @@
 #include"../DefaultMap/DefaultMap.h"
 
 
+//勝利フラグ
+bool IsPlayer1Win = false;
+bool IsPlayer2Win = false;
+bool IsCPUWin = false;
+
 //初期化
 void PLAYER::Init(int playerNumber)
 {
@@ -25,11 +30,6 @@ void PLAYER::Init(int playerNumber)
 	//プレイヤー1の初期化
 	dir = IsRight;
 	ActionStateID = State_Normal;
-
-	//勝利フラグ
-	IsPlayer1Win = false;
-	IsPlayer2Win = false;
-	IsCPUWin = false;
 
 	IsJump = false;
 	IsDush = false;
