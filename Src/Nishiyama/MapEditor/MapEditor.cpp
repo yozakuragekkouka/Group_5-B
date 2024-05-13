@@ -58,6 +58,9 @@ MapEditor::~MapEditor()
 
 void MapEditor::Init()
 {
+	screenPos.x = -200.0f;
+	screenPos.y = -150.0f;
+
 	MoveFlag = false;
 
 	currentEditMapID = 0;
@@ -89,7 +92,7 @@ void MapEditor::Init()
 		}
 	}
 
-	DrawRate = 1.0f;
+	DrawRate = 0.75f;
 
 	if (!gimmickID.empty())
 	{
@@ -255,16 +258,18 @@ void MapEditor::Step()
 					{
 						dummyInt = (int)(gimmickID.size() / sizeof(int));
 						dummyIDptr = new GimmickID[dummyInt];
+						int count = 0;
 						for (auto element : gimmickID)
 						{
-							dummyIDptr[i] = element;
+							dummyIDptr[count] = element;
+							count++;
 						}
 					}
 
 					MapOperation::SaveMap(data, dummyInt, dummyIDptr, true, currentEditMapID);
 					if (!gimmickID.empty())
 					{
-						int dummyInt = 0;
+						dummyInt = 0;
 						delete[] dummyIDptr;
 						gimmickID.erase(gimmickID.begin(), gimmickID.end());
 					}
@@ -576,6 +581,30 @@ void MapEditor::Draw()
 
 void MapEditor::Fin()
 {
+	//ç≈å„ÇÃÉ}ÉbÉvÇ‡ï€ë∂
+	int dummyInt = 0;
+	GimmickID* dummyIDptr = nullptr;
+	if (!gimmickID.empty())
+	{
+		dummyInt = (int)(gimmickID.size() / sizeof(int));
+		dummyIDptr = new GimmickID[dummyInt];
+		int count = 0;
+		for (auto element : gimmickID)
+		{
+			dummyIDptr[count] = element;
+			count++;
+		}
+	}
+
+	MapOperation::SaveMap(data, dummyInt, dummyIDptr, true, currentEditMapID);
+
+
+	if (!gimmickID.empty())
+	{
+		dummyInt = 0;
+		delete[] dummyIDptr;
+		gimmickID.erase(gimmickID.begin(), gimmickID.end());
+	}
 
 	if (eraserImage != -1)
 	{

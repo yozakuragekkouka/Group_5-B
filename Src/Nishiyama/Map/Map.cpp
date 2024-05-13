@@ -1,7 +1,7 @@
 #include "../../Common.h"
 #include "Map.h"
 
-Map::Map(int AllGimmickNum):gimmick_Num(AllGimmickNum)
+Map::Map()
 {
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
@@ -10,6 +10,7 @@ Map::Map(int AllGimmickNum):gimmick_Num(AllGimmickNum)
 
 	memset(&data, 0, sizeof(MapData));
 
+	gimmick_Num = 0;
 	gimmickID = nullptr;
 	gimmick = nullptr;
 }
@@ -33,7 +34,7 @@ Map::~Map()
 	}
 }
 
-void Map::Init()
+void Map::Init(bool isEdit, int MapID)
 {
 	for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 	{
@@ -43,11 +44,10 @@ void Map::Init()
 		mapImage[i] = LoadGraph(MAPCHIP_PATH[i]);
 	}
 
+	MapOperation::LoadMap(data, gimmick_Num, gimmickID, isEdit, MapID);
+
 	if (gimmick_Num > 0)
 	{
-		gimmickID = new GimmickID[gimmick_Num];
-		memset(&gimmickID, 0, sizeof(gimmickID));
-
 		gimmick = new GimmickBase * [gimmick_Num];
 
 		for (int i = 0; i < gimmick_Num; i++)
