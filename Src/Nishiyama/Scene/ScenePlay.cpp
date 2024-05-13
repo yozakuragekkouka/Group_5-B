@@ -7,9 +7,9 @@
 #include "SceneTitle.h"
 #include "../Collision/Collision.h"
 
-//奥村
-#include"../DefaultMap/DefaultMap.h"
-_Map* CMap;
+
+
+
 
 //プレイシーン初期化
 void ScenePlay::Init()
@@ -189,7 +189,7 @@ void ScenePlay::CheckCollision(int index, bool checkY) {
 			VECTOR A = { player[index].GetNormalPlayerPos().x,player[index].GetNormalPlayerPos().y ,0 };
 			VECTOR Asize = { player[index].GetPlayerSize().x ,player[index].GetPlayerSize().y ,0};
 
-			VECTOR B = { mapIndexX * MAP_SIZE , mapIndexY * MAP_SIZE ,0 };
+			VECTOR B = { (mapIndexX * MAP_SIZE)+ MAP_SIZE , (mapIndexY * MAP_SIZE) + MAP_SIZE ,0 };
 			VECTOR Bsize = { MAP_SIZE ,MAP_SIZE ,0 };
 
 			if (checkY) {
