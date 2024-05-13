@@ -107,6 +107,12 @@ protected:
 	bool IsReturn;
 	bool IsJump;
 	bool IsGround;
+	bool IsAttack;
+
+	//勝利フラグ
+	bool IsPlayer1Win;
+	bool IsPlayer2Win;
+	bool IsCPUWin;
 
 	int flameCount;
 	int LoopCount;
@@ -158,6 +164,39 @@ public:
 
 	//アニメーション切り替え処理
 	void PlayerAnimetion();
+
+	//勝利フラグ(プレイヤー1)設定
+	bool GetPlayer1Win()
+	{
+		return IsPlayer1Win;
+	}
+	//勝利フラグ(プレイヤー2)設定
+	bool GetPlayer1Win()
+	{
+		return IsPlayer2Win;
+	}
+	//勝利フラグ(CPU)設定
+	bool GetCPUWin()
+	{
+		return IsCPUWin;
+	}
+
+	//勝利フラグ(プレイヤー1)設定
+	void SetPlayer1Win()
+	{
+		 IsPlayer1Win = true;
+	}
+	//勝利フラグ(プレイヤー2)設定
+	void SetPlayer1Win()
+	{
+		 IsPlayer2Win = true;
+	}
+	//勝利フラグ(CPU)設定
+	void SetCPUWin()
+	{
+		 IsCPUWin = true;
+	}
+
 
 	//弾の最大数取得
 	int GetBulletMaxNum()
@@ -290,7 +329,7 @@ public:
 	//通常のプレイヤー座標を取得
 	VECTOR GetNormalPlayerPos()
 	{
-		return Pos;
+		return Pos1;
 	}
 
 	//マップ当たり判定

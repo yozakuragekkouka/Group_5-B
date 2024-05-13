@@ -4,13 +4,11 @@
 #include <math.h>
 #include <cmath>
 #include<vector>
-#include"../Map/Map.h"
+#include"../DefaultMap/DefaultMap.h"
 
 #include <iostream>
-#include <queue>
-#include <vector>
-#include <map>
-#include <algorithm>
+
+
 
 
 //画像パス
@@ -45,15 +43,6 @@ void Enemy::Init(int num) {
 	if (num == 0)
 		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
 				  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
-	if (num == 1)
-		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
-			  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
-	if (num == 2)
-		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
-				  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
-	if (num == 3)
-		m_next_pos = { ((SCREEN_SIZE_X / 4) - ((float)EnemySize / 2)),
-			  ((SCREEN_SIZE_Y / 4) - ((float)EnemySize / 2)),0 };
 	//画像読み込み
 	LoadDivGraph("Data/Image/Player/player_div.png", 12, 4, 3, 64, 64, EnemyHan);
 	speed = 0;
@@ -147,57 +136,7 @@ void Enemy::NearsRival()
 
 	m_next_pos.x += speed * cos(angle); // X方向の移動
 }
-//// 一番近い敵に近づく
-//void Enemy::NearsRival()
-//{
-//	int dx_player = dvd[currentRivalIndex].x - m_pos.x - ((float)EnemySize / 2);
-//	int dy_player = dvd[currentRivalIndex].y - m_pos.y - ((float)EnemySize / 2);
-//	float distance_player = sqrt(dx_player * dx_player + dy_player * dy_player);
-//
-//	float angle = atan2(dy_player, dx_player); // 敵とキャラクターの角度
-//	speed = MaxEnemySpeed;
-//
-//	// X方向の移動
-//	m_next_pos.x += speed * cos(angle);
-//
-//	// ブロックが間にあるかどうかをチェック
-//	if (IsBlockBetween(m_pos.x, m_pos.y, dvd[currentRivalIndex].x, dvd[currentRivalIndex].y)) {
-//		SetJump(); // ブロックを越えるためにジャンプ
-//		
-//	}
-//}
-//
-//// ブロックが間にあるかどうかをチェックする関数
-//bool Enemy::IsBlockBetween(float x1, float y1, float x2, float y2) {
-//	// 2点間の距離を計算
-//	float distance = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-//
-//	// チェックするポイントの数を決定（例: 距離に応じて）
-//	int numberOfPoints = static_cast<int>(distance / CHECK_INTERVAL);
-//
-//	for (int i = 0; i <= numberOfPoints; ++i) {
-//		// 線形補間で現在のチェックポイントを計算
-//		float lerpFactor = static_cast<float>(i) / numberOfPoints;
-//		float currentX = lerp(x1, x2, lerpFactor);
-//		float currentY = lerp(y1, y2, lerpFactor);
-//
-//		// マップデータの座標系に変換
-//		int gridX = static_cast<int>(currentX / MAP_SIZE);
-//		int gridY = static_cast<int>(currentY / MAP_SIZE);
-//
-//		// マップデータの範囲内かどうかをチェック
-//		if (gridX < 0 || gridX >= MAP_DATA_X || gridY < 0 || gridY >= MAP_DATA_Y) {
-//			continue; // 範囲外なら次のポイントへ
-//		}
-//
-//		// マップデータからブロックの有無を取得
-//		if (m_MapData[gridY][gridX] != 0) { // 0以外の値はブロックがあることを示す
-//			return true; // ブロックが見つかった
-//		}
-//	}
-//
-//	return false; // ブロックは見つからなかった
-//}
+
 
 void Enemy::Jump()
 {
