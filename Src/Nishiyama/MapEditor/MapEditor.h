@@ -15,6 +15,9 @@ constexpr int EDIT_TOOL_Y = 100 + EDIT_TOOL_SELECT_Y;
 constexpr int EDIT_TOOL_ELEMENT_X_OFFSET = 30;
 constexpr int EDIT_TOOL_ELEMENT_Y = 60;
 
+constexpr int MAP_SELECT_Y_OFFSET = 30;
+constexpr int MAP_SELECT_SIZE_Y = 60;
+
 enum class EditTool
 {
 	Block,
@@ -37,6 +40,7 @@ private:
 	bool MoveFlag;
 
 	int currentEditMapID;
+	bool mapSelectFlag;
 
 	EditTool currentSelectTool;
 	bool toolSelectFlag;

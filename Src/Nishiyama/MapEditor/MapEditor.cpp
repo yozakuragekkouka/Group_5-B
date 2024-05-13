@@ -8,6 +8,8 @@ MapEditor::MapEditor()
 	MoveFlag = false;
 
 	currentEditMapID = 0;
+	mapSelectFlag = false;
+
 	currentSelectTool = EditTool::Block;
 	toolSelectFlag = false;
 
@@ -59,6 +61,8 @@ void MapEditor::Init()
 	MoveFlag = false;
 
 	currentEditMapID = 0;
+	mapSelectFlag = false;
+
 	currentSelectTool = EditTool::Block;
 	toolSelectFlag = false;
 
@@ -90,6 +94,18 @@ void MapEditor::Init()
 	if (!gimmickID.empty())
 	{
 		gimmickID.erase(gimmickID.begin(), gimmickID.end());
+	}
+
+	int dummyInt = 0;
+	GimmickID* dummyIDptr = nullptr;
+	MapOperation::LoadMap(data, dummyInt, dummyIDptr, true, currentEditMapID);
+	if (dummyInt > 0)
+	{
+		for (int i = 0; i < dummyInt; i++)
+		{
+			gimmickID.push_back(dummyIDptr[i]);
+		}
+		delete[] dummyIDptr;
 	}
 }
 
@@ -216,12 +232,74 @@ void MapEditor::Step()
 		}
 	}
 
+	//マップ変更
+	for (int i = 0; i < EDIT_MAP_NUM; i++)
+	{
+		VECTOR mouse = Input::GetMousePos();
+		if (mouse.x > 0 &&
+			mouse.y > EDIT_TOOL_Y + MAP_SELECT_Y_OFFSET + (MAP_SELECT_Y_OFFSET + MAP_SELECT_SIZE_Y) * i &&
+			mouse.x < MAP_SELECT_X &&
+			mouse.y < EDIT_TOOL_Y + MAP_SELECT_Y_OFFSET + (MAP_SELECT_Y_OFFSET + MAP_SELECT_SIZE_Y) * i + MAP_SELECT_SIZE_Y)
+		{
+			if ((MouseState & MOUSE_INPUT_LEFT) != 0)
+			{
+				//押されている
+				if (mapSelectFlag == false)
+				{
+					//押されつづけていない
+					mapSelectFlag = true;
+
+					int dummyInt = 0;
+					GimmickID* dummyIDptr = nullptr;
+					if (!gimmickID.empty())
+					{
+						dummyInt = (int)(gimmickID.size() / sizeof(int));
+						dummyIDptr = new GimmickID[dummyInt];
+						for (auto element : gimmickID)
+						{
+							dummyIDptr[i] = element;
+						}
+					}
+
+					MapOperation::SaveMap(data, dummyInt, dummyIDptr, true, currentEditMapID);
+					if (!gimmickID.empty())
+					{
+						int dummyInt = 0;
+						delete[] dummyIDptr;
+						gimmickID.erase(gimmickID.begin(), gimmickID.end());
+					}
+
+					currentEditMapID = i;
+					MapOperation::LoadMap(data, dummyInt, dummyIDptr, true, currentEditMapID);
+					if (dummyInt > 0)
+					{
+						for (int i = 0; i < dummyInt; i++)
+						{
+							gimmickID.push_back(dummyIDptr[i]);
+						}
+						delete[] dummyIDptr;
+					}
+				}
+			}
+			else
+			{
+				//押されていない
+				mapSelectFlag = false;
+			}
+		}
+		else
+		{
+			mapSelectFlag = false;
+		}
+	}
+
+	float chip_size = ((float)MAPCHIP_SIZE * DrawRate);	//マップチップ一枚当たりの領域
 	switch (currentSelectTool)
 	{
 	case EditTool::Block:
+		VECTOR mouse = Input::GetMousePos();
 		for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 		{
-			VECTOR mouse = Input::GetMousePos();
 			if (mouse.x > EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i &&
 				mouse.y > EDIT_TOOL_ELEMENT_Y &&
 				mouse.x < EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE &&
@@ -247,6 +325,43 @@ void MapEditor::Step()
 			else
 			{
 				toolElementSelectFlag = false;
+			}
+		}
+
+		//ブロック設置
+		if ((MouseState & MOUSE_INPUT_LEFT) == 0)
+		{
+			memset(&isSet, 0, sizeof(isSet));
+		}
+		else
+		{
+			if (mouse.x > (float)MAP_SELECT_X &&
+				mouse.y > (float)EDIT_TOOL_Y &&
+				mouse.x < (float)SCREEN_SIZE_X &&
+				mouse.y < (float)SCREEN_SIZE_Y)
+			{
+				for (int j = 0; j < MAPCHIP_NUM_Y; j++)
+				{
+					for (int i = 0; i < MAPCHIP_NUM_X; i++)
+					{
+
+						if (mouse.x > (chip_size * -MAPCHIP_OVER + chip_size * i - screenPos.x) &&
+							mouse.y > (chip_size * -MAPCHIP_OVER + chip_size * j - screenPos.y) &&
+							mouse.x < (chip_size * -MAPCHIP_OVER + chip_size * (i + 1) - screenPos.x) &&
+							mouse.y < (chip_size * -MAPCHIP_OVER + chip_size * (j + 1) - screenPos.y))
+						{
+							if ((MouseState & MOUSE_INPUT_LEFT) != 0)
+							{
+								//押されている
+								if (isSet[j][i] == false)
+								{
+									data[j][i] = (MAPCHIP_KIND)currentToolID;
+									isSet[j][i] = true;
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 		break;
@@ -344,6 +459,26 @@ void MapEditor::Draw()
 			10,
 			GetColor(255, 255, 255),
 			EDIT_TOOL_NAME[i]);
+	}
+	
+	//マップセレクト文字
+	for (int i = 0; i < EDIT_MAP_NUM; i++)
+	{
+		unsigned int BoxColor = GetColor(80, 80, 80);
+		if (i == currentEditMapID)
+		{
+			BoxColor = GetColor(150, 150, 150);
+		}
+		DrawBox(0,
+			EDIT_TOOL_Y + MAP_SELECT_Y_OFFSET + (MAP_SELECT_Y_OFFSET + MAP_SELECT_SIZE_Y) * i,
+			MAP_SELECT_X,
+			EDIT_TOOL_Y + MAP_SELECT_Y_OFFSET + (MAP_SELECT_Y_OFFSET + MAP_SELECT_SIZE_Y) * i + MAP_SELECT_SIZE_Y,
+			BoxColor, true);
+
+		DrawFormatString(0,
+			EDIT_TOOL_Y + MAP_SELECT_Y_OFFSET + (MAP_SELECT_Y_OFFSET + MAP_SELECT_SIZE_Y) * i + 20,
+			GetColor(255, 255, 255),
+			"EDIT MAP %d", i + 1);
 	}
 
 	//ツール.内容
