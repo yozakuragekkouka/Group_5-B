@@ -28,7 +28,7 @@ void SceneTitle::Init()
 	Se2_Hndl = LoadSoundMem(SE_D_PATH);
 
 	//‹È‚ÌŒø‰Ê‰¹
-	PlaySoundMem(bgm_Hndl, DX_PLAYTYPE_LOOP, true);
+	/*PlaySoundMem(bgm_Hndl, DX_PLAYTYPE_LOOP, true);*/
 
 	Play_Hndl = LoadGraph(PLAY_PATH);
 	Play2_Hndl = LoadGraph(PLAY2_PATH);
@@ -60,9 +60,9 @@ void SceneTitle::Step()
 	}
 	else if (Input::IsKeyPush(KEY_INPUT_RETURN))
 	{
+		PlaySoundMem(Se2_Hndl, DX_PLAYTYPE_BACK, true);
 		nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_TITLE;
-		PlaySoundMem(Se2_Hndl, DX_PLAYTYPE_BACK, true);
 	}
 	
 	if (Input::IsKeyPush(KEY_INPUT_UP))
