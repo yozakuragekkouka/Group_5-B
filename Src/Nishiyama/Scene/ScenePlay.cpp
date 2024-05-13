@@ -6,7 +6,7 @@
 #include "ScenePlay.h"
 #include "SceneTitle.h"
 #include "../Collision/Collision.h"
-
+#include"../Effect/Effect.h"
 
 
 
@@ -33,6 +33,12 @@ void ScenePlay::Init()
 		player[1].Load();
 	}
 
+	//エフェクトの初期化
+	InitEffect();
+	//エフェクトの読み込み
+	LoadEffect(EFFECT_TYPE_JUMP, 10);
+	LoadEffect(EFFECT_TYPE_HIT, 2);
+
 	playBgm_Hndl = LoadSoundMem(PLAYBGM_PATH);
 
 	//曲の効果音
@@ -55,7 +61,7 @@ void ScenePlay::Step()
 	MapCollision();
 
 
-	
+	StepEffect();
 
 	if (PlayNumber == 2)
 	{
@@ -71,6 +77,10 @@ void ScenePlay::Step()
 					if (Collision::IsHitRectNormal(player[0].GetPunchPosX() - 64, player[0].GetPunchPosY() - 32, 32, 64,
 						player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
 					{
+						PlayEffect(EFFECT_TYPE_HIT, 
+							player[1].GetNormalPlayerPos().x, 
+							player[1].GetNormalPlayerPos().y);
+
 						player[1].Damege(10);
 					}
 				}
@@ -83,6 +93,9 @@ void ScenePlay::Step()
 					if (Collision::IsHitRectNormal(player[0].GetPunchPosX() + 32, player[0].GetPunchPosY() - 32, 32, 64,
 						player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
 					{
+						PlayEffect(EFFECT_TYPE_HIT, 
+							player[1].GetNormalPlayerPos().x, 
+							player[1].GetNormalPlayerPos().y);
 						player[1].Damege(10);
 					}
 				}
@@ -101,6 +114,9 @@ void ScenePlay::Step()
 					if (Collision::IsHitRectNormal(player[1].GetPunchPosX() - 64, player[1].GetPunchPosY() - 32, 32, 64,
 						player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
 					{
+						PlayEffect(EFFECT_TYPE_HIT, 
+							player[0].GetNormalPlayerPos().x, 
+							player[0].GetNormalPlayerPos().y);
 						player[0].Damege(10);
 					}
 				}
@@ -113,6 +129,9 @@ void ScenePlay::Step()
 					if (Collision::IsHitRectNormal(player[1].GetPunchPosX() + 32, player[1].GetPunchPosY() - 32, 32, 64,
 						player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
 					{
+						PlayEffect(EFFECT_TYPE_HIT, 
+							player[0].GetNormalPlayerPos().x,
+							player[0].GetNormalPlayerPos().y);
 						player[0].Damege(10);
 					}
 				}
@@ -132,6 +151,9 @@ void ScenePlay::Step()
 				{
 					if (Collision::IsHitRect(player[0].GetBulletPos(i), player[1].GetNormalPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
 					{
+						PlayEffect(EFFECT_TYPE_HIT,
+							player[1].GetNormalPlayerPos().x,
+							player[1].GetNormalPlayerPos().y);
 						//プレイヤー2にダメージを与える
 						player[1].Damege(player[0].GetBulletDamege());
 						//ダメージクールタイムを0にする
@@ -152,6 +174,9 @@ void ScenePlay::Step()
 				{
 					if (Collision::IsHitRect(player[1].GetBulletPos(i), player[0].GetNormalPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
 					{
+						PlayEffect(EFFECT_TYPE_HIT,
+							player[0].GetNormalPlayerPos().x,
+							player[0].GetNormalPlayerPos().y);
 						//プレイヤー1にダメージを与える
 						player[0].Damege(player[1].GetBulletDamege());
 						//ダメージクールタイムを0にする
@@ -217,7 +242,7 @@ void ScenePlay::Draw()
 
 	//奥村
 	CMap->Draw();
-
+	DrawEffect();
 	player[0].Draw(0);
 	if (PlayNumber == 2)
 	{
@@ -249,6 +274,8 @@ void ScenePlay::Fin()
 	//奥村
 	delete CMap;
 	CMap = nullptr;
+
+	FinEffect();
 
 	DeleteSoundMem(playBgm_Hndl);
 

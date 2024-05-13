@@ -28,7 +28,7 @@ void SceneTitle::Init()
 	Se2_Hndl = LoadSoundMem(SE_D_PATH);
 
 	//‹È‚ÌŒø‰Ê‰¹
-	/*PlaySoundMem(bgm_Hndl, DX_PLAYTYPE_LOOP, true);*/
+	PlaySoundMem(bgm_Hndl, DX_PLAYTYPE_LOOP, true);
 
 	Play_Hndl = LoadGraph(PLAY_PATH);
 	Play2_Hndl = LoadGraph(PLAY2_PATH);

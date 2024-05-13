@@ -1,60 +1,42 @@
-#pragma once
 
-#include <DxLib.h>
+#ifndef __EFFECT_H__
+#define __EFFECT_H__
 
-//一度に表示できるエフェクト最大数
-#define EFFECT_MAX_NUM		(20)
+//設定フレームレート（60FPS）
+#define FRAME_RATE	(60)
 
-//ジャンプエフェクト
-#define JUMP_EFFECT_HNDL_PATH		"Data/Image/Player/JumpEffect.png"
-#define JUMP_ANIME_NUM		(6)
+//１フレームの時間（ミリ秒）
+#define FRAME_TIME	(1000 / FRAME_RATE)
 
-//ヒットエフェクト
-#define HIT_EFFECT_HNDL_PATH		"Data/Image/Player/HitEffect.png"
-#define HIT_ANIME_NUM		(12)
 
-struct Hundle
+//エフェクトの種類
+enum EFFECT_TYPE
 {
-	int JumpHndl[2][JUMP_ANIME_NUM];
-	int HitHndl[2][HIT_ANIME_NUM];
+	EFFECT_TYPE_JUMP = 0,	//ジャンプ
+	EFFECT_TYPE_HIT,		//ヒット
+
+	EFFECT_TYPE_NUM,
 };
 
-// エフェクトアニメーションクラス
-class EffectAnimation {
-public:
-    // エフェクトの位置
-    int x, y;
-    // エフェクトの現在のスケール
-    float scale;
-    // アニメーションのフレームカウンタ
-    int frameCount;
-    // アニメーションが終了したかどうか
-    bool isFinished;
-    // コンストラクタ
-    EffectAnimation(int startX, int startY) : x(startX), y(startY), 
-        scale(1.0f), frameCount(0), isFinished(false) {}
-    // アニメーションを更新する関数
-    void Update() {
-        // アニメーションが終了していない場合は更新を続ける
-        if (!isFinished) {
-            // スケールを増加させる
-            scale += 0.1f;
-            // フレームカウントを増加させる
-            frameCount++;
-     
-            DrawEffect();
-            // アニメーションの終了条件をチェック
-            if (frameCount > 30) {
-                // アニメーションを終了する
-                isFinished = true;
-            }
-        }
-    }
-    // エフェクトを描画する関数
-    void DrawEffect() {
-        // ここでエフェクトの描画を行う
-        // 例: DrawRotaGraph(x, y, scale, 0, imageHandle, TRUE);
-    }
-};
-// エフェクトアニメーションのインスタンスを作成
-EffectAnimation effect(100, 100);
+//エフェクトの読み込み
+//引数	：エフェクトの種類、作成数
+void LoadEffect(EFFECT_TYPE type, int create_num);
+
+//エフェクトの初期化
+void InitEffect();
+
+//エフェクト通常処理
+void StepEffect();
+
+//エフェクト描画処理
+void DrawEffect();
+
+//エフェクトの後処理
+void FinEffect();
+
+//エフェクトの再生
+//引数	：エフェクトの種類, Ｘ座標, Ｙ座標, １枚あたりの表示時間
+void PlayEffect(EFFECT_TYPE type, int x, int y);
+
+
+#endif

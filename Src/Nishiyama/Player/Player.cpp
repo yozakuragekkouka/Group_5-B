@@ -5,7 +5,7 @@
 #include "../../Common.h"
 #include"../DefaultMap/DefaultMap.h"
 #include "../NumberFont/NumberFont.h"
-
+#include"../Effect/Effect.h"
 
 //Ÿ—˜ƒtƒ‰ƒO
 bool IsPlayer1Win = false;
@@ -280,6 +280,8 @@ void PLAYER::Jump()
 {
 	if (JumpCount < JUMPMAX_NUM)
 	{
+		PlayEffect(EFFECT_TYPE_JUMP, Pos.x, Pos.y);
+
 		YSpeed = -15.0f;
 		JumpCount++;
 	}
