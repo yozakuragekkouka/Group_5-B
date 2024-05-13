@@ -200,6 +200,7 @@ void MapEditor::Step()
 					//押されつづけていない
 					toolSelectFlag = true;
 
+					currentToolID = 0;
 					currentSelectTool = (EditTool)i;
 				}
 			}
@@ -226,7 +227,26 @@ void MapEditor::Step()
 				mouse.x < EDIT_TOOL_ELEMENT_X_OFFSET + (EDIT_TOOL_ELEMENT_X_OFFSET + MAPCHIP_SIZE) * i + MAPCHIP_SIZE &&
 				mouse.y < EDIT_TOOL_ELEMENT_Y + MAPCHIP_SIZE)
 			{
+				if ((MouseState & MOUSE_INPUT_LEFT) != 0)
+				{
+					//押されている
+					if (toolElementSelectFlag == false)
+					{
+						//押されつづけていない
+						toolElementSelectFlag = true;
 
+						currentToolID = i;
+					}
+				}
+				else
+				{
+					//押されていない
+					toolElementSelectFlag = false;
+				}
+			}
+			else
+			{
+				toolElementSelectFlag = false;
 			}
 		}
 		break;
@@ -330,6 +350,7 @@ void MapEditor::Draw()
 	switch (currentSelectTool)
 	{
 	case EditTool::Block:
+		//ツールアイコン表示
 		for (int i = 0; i < (int)MAPCHIP_KIND::KindNum; i++)
 		{
 			if (i == (int)MAPCHIP_KIND::Air)
@@ -370,7 +391,47 @@ void MapEditor::Draw()
 					GetColor(255, 0, 0), true);
 			}
 		}
+		VECTOR mouse = Input::GetMousePos();
+		if (currentToolID == (int)MAPCHIP_KIND::Air)
+		{
+			if (eraserImage != -1)
+			{
+				DrawExtendGraphF(mouse.x + 10.0f,
+					mouse.y + 10.0f,
+					mouse.x + 20.0f,
+					mouse.y + 20.0f,
+					eraserImage, true);
+			}
+			else
+			{
+				DrawBox((int)mouse.x + 10,
+					(int)mouse.y + 10,
+					(int)mouse.x + 20,
+					(int)mouse.y + 20,
+					GetColor(255, 0, 0), true);
+			}
+		}
+		else
+		{
+			if (mapImage[currentToolID] != -1)
+			{
+				DrawExtendGraphF(mouse.x + 10.0f,
+					mouse.y + 10.0f,
+					mouse.x + 20.0f,
+					mouse.y + 20.0f,
+					mapImage[currentToolID], true);
+			}
+			else
+			{
+				DrawBox((int)mouse.x + 10,
+					(int)mouse.y + 10,
+					(int)mouse.x + 20,
+					(int)mouse.y + 20,
+					GetColor(255, 0, 0), true);
+			}
+		}
 		break;
+
 	case EditTool::Gimmick:
 		break;
 	default:
