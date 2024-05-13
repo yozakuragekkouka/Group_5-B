@@ -2,6 +2,7 @@
 #include "../../Common.h"
 #include "../Input/Input.h"
 #include "SceneResult.h"
+#include "SceneTitle.h"
 
 
 
@@ -91,6 +92,7 @@ void SceneResult::Draw()
 void SceneResult::Fin()
 {
 	DeleteSoundMem(BGM_Hndl);
+	PlayNumber = 0;
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;
 
 }

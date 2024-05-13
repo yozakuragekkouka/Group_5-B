@@ -26,8 +26,7 @@ extern bool IsCPUWin;
 struct Hundle
 {
 	int PlayerHndl[2][PLAYER_ANIME_NUM];
-	int HP_Flame_Hbndl[2];
-	int HP_Hndl[2];
+	int HP_Hndl[2][10];
 };
 
 //方向
@@ -60,6 +59,7 @@ protected:
 	Hundle hundl;
 	int AnimeNum;
 	VECTOR PlayerSize;
+	VECTOR LifePos;
 	
 	//プレイヤーのライフ
 	int Life;
@@ -312,11 +312,14 @@ public:
 	//通常のプレイヤー座標を取得(原点が左上座標)
 	VECTOR GetNormalPlayerPos()
 	{
-		return Pos1;
+		return Pos;
 	}
 
 	//マップ当たり判定
 	void HandleCollision(int index, bool dirArray[],
 		VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY);
+
+	//数字の描画
+	void DrawNumber(int Hndl[10], int Score, int X, int Y);
 };
 

@@ -3,8 +3,11 @@
 #include "../BackGround/BackGround.h"
 #include "../Player/Player.h"
 #include "../DefaultMap/DefaultMap.h"
+#include "../NumberFont/NumberFont.h"
+#include "../NumberFont/NumberFontData.h"
 
 #define PLAYBGM_PATH		"Data/BGM/êÌì¨BGM.wav"
+
 class ScenePlay : public SceneBase
 {
 private:

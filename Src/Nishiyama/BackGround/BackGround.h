@@ -30,6 +30,9 @@ private:
 	Rect_Data BG_Image[BACK_GROUND_NUM];
 	BackGroundKind kind;
 
+	/*int BgHundl[2][3];
+	int BgPosX;*/
+
 public:
 	BackGround();
 	~BackGround();

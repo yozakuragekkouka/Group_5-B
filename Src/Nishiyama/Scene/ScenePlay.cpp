@@ -54,116 +54,126 @@ void ScenePlay::Step()
 	//マップとの当たり判定
 	MapCollision();
 
+
 	
-	//近接攻撃の当たり判定
-	if (Input::IsKeyPush(player[0].GetBottan()))
-	{
-		//左
-		if (player[0].GetPlayerdir() == 0)
-		{
-			//プレイヤー1の当たり判定(プレイヤー2がダメージを受ける)
-			if (player[0].GetDamegeCoolTime() >= 30)
-			{
-				if (Collision::IsHitRectNormal(player[0].GetPunchPosX() - 64, player[0].GetPunchPosY() - 32, 32, 64,
-					player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
-				{
-					player[1].Damege(10);
-				}
-			}
-		}
-		//右
-		if (player[0].GetPlayerdir() == 1)
-		{
-			if (player[0].GetDamegeCoolTime() >= 30)
-			{
-				if (Collision::IsHitRectNormal(player[0].GetPunchPosX() + 32, player[0].GetPunchPosY() - 32, 32, 64,
-					player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
-				{
-					player[1].Damege(10);
-				}
-			}
-		}
-		
-	}
-	//近接攻撃の当たり判定
-	if (Input::IsKeyPush(player[1].GetBottan()))
-	{
-		//プレイヤー2の当たり判定(プレイヤー1がダメージを受ける)
-		if (player[1].GetPlayerdir() == 0)
-		{
-			if (player[1].GetDamegeCoolTime() >= 30)
-			{
-				if (Collision::IsHitRectNormal(player[1].GetPunchPosX() - 64, player[1].GetPunchPosY() - 32, 32, 64,
-					player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
-				{
-					player[0].Damege(10);
-				}
-			}
-		}
-		//右
-		if (player[1].GetPlayerdir() == 1)
-		{
-			if (player[1].GetDamegeCoolTime() >= 30)
-			{
-				if (Collision::IsHitRectNormal(player[1].GetPunchPosX() + 32, player[1].GetPunchPosY() - 32, 32, 64,
-					player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
-				{
-					player[0].Damege(10);
-				}
-			}
-		}
-	}
 
-	//弾の当たり判定--------------------------------------------------------------
+	if (PlayNumber == 2)
+	{
+		//近接攻撃の当たり判定
+		if (Input::IsKeyPush(player[0].GetBottan()))
+		{
+			//左
+			if (player[0].GetPlayerdir() == 0)
+			{
+				//プレイヤー1の当たり判定(プレイヤー2がダメージを受ける)
+				if (player[0].GetDamegeCoolTime() >= 30)
+				{
+					if (Collision::IsHitRectNormal(player[0].GetPunchPosX() - 64, player[0].GetPunchPosY() - 32, 32, 64,
+						player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
+					{
+						player[1].Damege(10);
+					}
+				}
+			}
+			//右
+			if (player[0].GetPlayerdir() == 1)
+			{
+				if (player[0].GetDamegeCoolTime() >= 30)
+				{
+					if (Collision::IsHitRectNormal(player[0].GetPunchPosX() + 32, player[0].GetPunchPosY() - 32, 32, 64,
+						player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
+					{
+						player[1].Damege(10);
+					}
+				}
+			}
+
+		}
+
+		//近接攻撃の当たり判定
+		if (Input::IsKeyPush(player[1].GetBottan()))
+		{
+			//プレイヤー2の当たり判定(プレイヤー1がダメージを受ける)
+			if (player[1].GetPlayerdir() == 0)
+			{
+				if (player[1].GetDamegeCoolTime() >= 30)
+				{
+					if (Collision::IsHitRectNormal(player[1].GetPunchPosX() - 64, player[1].GetPunchPosY() - 32, 32, 64,
+						player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
+					{
+						player[0].Damege(10);
+					}
+				}
+			}
+			//右
+			if (player[1].GetPlayerdir() == 1)
+			{
+				if (player[1].GetDamegeCoolTime() >= 30)
+				{
+					if (Collision::IsHitRectNormal(player[1].GetPunchPosX() + 32, player[1].GetPunchPosY() - 32, 32, 64,
+						player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
+					{
+						player[0].Damege(10);
+					}
+				}
+			}
+		}
+	}
+	
+	if (PlayNumber == 2)
+	{
+		//弾の当たり判定--------------------------------------------------------------
 	//プレイヤー1の弾の当たり判定(プレイヤー2がダメージを受ける)
-	if (player[0].GetDamegeCoolTime() >= 30)
-	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
+		if (player[0].GetDamegeCoolTime() >= 30)
 		{
-			if (player[0].GetBulletIsUse(i) == true)
+			for (int i = 0; i < BULLET_MAX_NUM; i++)
 			{
-				if (Collision::IsHitRect(player[0].GetBulletPos(i), player[1].GetNormalPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+				if (player[0].GetBulletIsUse(i) == true)
 				{
-					//プレイヤー2にダメージを与える
-					player[1].Damege(player[0].GetBulletDamege());
-					//ダメージクールタイムを0にする
-					player[1].SetDamageCoolTime();
-					//弾の使用フラグをfalseにする
-					player[0].SetBulletIsUse(i);
-				}
-			}
-		}	
-	}
-
-	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
-	if (player[1].GetDamegeCoolTime() >= 30)
-	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			if (player[1].GetBulletIsUse(i) == true)
-			{
-				if (Collision::IsHitRect(player[1].GetBulletPos(i), player[0].GetNormalPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
-				{
-					//プレイヤー1にダメージを与える
-					player[0].Damege(player[1].GetBulletDamege());
-					//ダメージクールタイムを0にする
-					player[0].SetDamageCoolTime();
-					//弾の使用フラグをfalseにする
-					player[1].SetBulletIsUse(i);
+					if (Collision::IsHitRect(player[0].GetBulletPos(i), player[1].GetNormalPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+					{
+						//プレイヤー2にダメージを与える
+						player[1].Damege(player[0].GetBulletDamege());
+						//ダメージクールタイムを0にする
+						player[1].SetDamageCoolTime();
+						//弾の使用フラグをfalseにする
+						player[0].SetBulletIsUse(i);
+					}
 				}
 			}
 		}
-	}
 
-	//ダメージクールタイムを加算
-	for (int Number = 0; Number < 2; Number++)
-	{
-		if (player[Number].GetDamegeCoolTime() <= 30)
+		//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
+		if (player[1].GetDamegeCoolTime() >= 30)
 		{
-			player[Number].AddDamageCoolTime(1);
+			for (int i = 0; i < BULLET_MAX_NUM; i++)
+			{
+				if (player[1].GetBulletIsUse(i) == true)
+				{
+					if (Collision::IsHitRect(player[1].GetBulletPos(i), player[0].GetNormalPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+					{
+						//プレイヤー1にダメージを与える
+						player[0].Damege(player[1].GetBulletDamege());
+						//ダメージクールタイムを0にする
+						player[0].SetDamageCoolTime();
+						//弾の使用フラグをfalseにする
+						player[1].SetBulletIsUse(i);
+					}
+				}
+			}
 		}
+
+		//ダメージクールタイムを加算
+		for (int Number = 0; Number < 2; Number++)
+		{
+			if (player[Number].GetDamegeCoolTime() <= 30)
+			{
+				player[Number].AddDamageCoolTime(1);
+			}
+		}
+		//---------------------------------------------------------------------------
+
 	}
-	//---------------------------------------------------------------------------
 	
 	//終了処理-------------------------------------------------------------------
 	if (PlayNumber == 1)
@@ -214,8 +224,11 @@ void ScenePlay::Draw()
 		player[1].Draw(1);
 	}
 
-	DrawFormatString(0, 200, GetColor(255, 255, 255), "プレイヤー1の体力：%d", player[0].GetHP());
-	DrawFormatString(0, 215, GetColor(255, 255, 255), "プレイヤー2の体力：%d", player[1].GetHP());
+	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤー1の体力：%d", player[0].GetHP());
+	if (PlayNumber == 2)
+	{
+		DrawFormatString(0, 15, GetColor(255, 255, 255), "プレイヤー2の体力：%d", player[1].GetHP());
+	}
 
 }
 

@@ -4,6 +4,7 @@
 #include "../Collision/Collision.h"
 #include "../../Common.h"
 #include"../DefaultMap/DefaultMap.h"
+#include "../NumberFont/NumberFont.h"
 
 
 //勝利フラグ
@@ -15,6 +16,8 @@ bool IsCPUWin = false;
 void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
+	
+	LifePos = { 300.0f, 500.0f, 0.0f };
 
 	flameCount = 20;
 	AnimeNum = 0;
@@ -70,6 +73,9 @@ void PLAYER::Init(int playerNumber)
 		ActionButton[2] = KEY_INPUT_RIGHT;		//右移動
 		ActionButton[3] = KEY_INPUT_RSHIFT;		//発射ボタン
 		ActionButton[4] = KEY_INPUT_RCONTROL;	//近距離攻撃
+
+		LifePos = { 00.0f, 500.0f, 0.0f };
+
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
@@ -178,23 +184,21 @@ void PLAYER::Draw(int playerNumber)
 		}
 	}
 	
-	//デバック
-	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JumpCount);
-	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
-	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
+	////数字の描画
+	//DrawNumber(hundl.HP_Hndl[playerNumber], Life, LifePos.x, LifePos.y);
 
-	//プレイヤーの当たり判定
-	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
+	////プレイヤーの当たり判定
+	//DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
 
-	//近接攻撃の当たり判定
-	if (dir == IsRight)
-	{
-		DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), false);
-	}
-	if (dir == IsLeft)
-	{
-		DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), false);
-	}
+	////近接攻撃の当たり判定
+	//if (dir == IsRight)
+	//{
+	//	DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), false);
+	//}
+	//if (dir == IsLeft)
+	//{
+	//	DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), false);
+	//}
 }
 
 //後処理
@@ -576,5 +580,24 @@ void PLAYER::HandleCollision(int index, bool dirArray[],
 			// めり込んだ分だけプレイヤーの位置を右に戻す
 			SetPlayerPosX(A.x - overlap);
 		}
+	}
+}
+
+
+void PLAYER::DrawNumber(int Hndl[10], int Score, int X, int Y)//引数(数字画像格納ハンドル, 入れたいスコア, X座標, Y座標)
+{
+	//ポイント描画
+	int DrawScore = Score;
+
+	int count = 0;
+
+	if (DrawScore == 0) {
+		DrawRotaGraph(X - count * 35, Y, 2.0f, 0.0f, Hndl[0], true);
+	}
+	while (DrawScore > 0) {
+		int num = DrawScore % 10;	//数字の確定
+		DrawScore = DrawScore / 10;
+		DrawRotaGraph(X - count * 35, Y, 2.0f, 0.0f, Hndl[num], true);
+		count++;	//表示座標の変更
 	}
 }

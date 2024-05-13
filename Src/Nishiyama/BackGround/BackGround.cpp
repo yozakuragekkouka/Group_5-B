@@ -12,6 +12,12 @@ BackGround::BackGround()
 	{
 		memset(&BG_Image[i], 0, sizeof(Rect_Data));
 	}
+
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	BgHundl[0][i] = -1;
+	//	BgHundl[1][i] = -1;
+	//}
 }
 
 BackGround::~BackGround()
@@ -29,6 +35,14 @@ void BackGround::Init(BackGroundKind Kind)
 	{
 		BG_Image[i].RectInit(LoadGraph(BACK_GROUND_PATH[(int)kind] ), VGet((float)BACK_GROUND_SIZEW * i, 0.0f, 0.0f), BACK_GROUND_SIZEW, BACK_GROUND_SIZEH);
 	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		BgHundl[i][0] = LoadGraph("Data/Play/sky.png");
+		BgHundl[i][1] = LoadGraph("Data/Play/cloud.png");
+		BgHundl[i][2] = LoadGraph("Data/Play/building.png");
+	}
+	/*BgPosX = 0;*/
 }
 
 void BackGround::Step()
@@ -70,6 +84,13 @@ void BackGround::Step()
 			ResultBackCount = 0;
 		}
 	}
+
+	/*BgPosX -= 10;
+
+	if (BgPosX <= 0)
+	{
+		BgPosX = 1280;
+	}*/
 }
 
 void BackGround::Draw()
@@ -86,6 +107,14 @@ void BackGround::Draw()
 		//BG_Image[i].DrawRect();
 		DrawBox((int)BG_Image[i].Get_pos().x, (int)BG_Image[i].Get_pos().y, (int)BG_Image[i].Get_pos().x + BACK_GROUND_SIZEW, (int)BG_Image[i].Get_pos().y + BACK_GROUND_SIZEH, color[i], true);
 	}
+
+	/*for (int i = 0; i < 2; i++)
+	{
+		for (int a = 0; a < 3; a++)
+		{
+			DrawGraph(BgPosX + i * 1280, 0, BgHundl[i][a], false);
+		}
+	}*/
 }
 
 void BackGround::Fin()
