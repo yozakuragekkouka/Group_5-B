@@ -94,8 +94,6 @@ protected:
 		bool BulletReturn;
 		int BulletAnimeIndex;
 		float Speed;
-		
-		
 	};
 	int BulletDamege;
 	VECTOR BulletSize;		//弾画像のサイズ
@@ -118,6 +116,10 @@ protected:
 
 	//アクションボタン
 	int ActionButton[6];
+
+	//近接攻撃に使う変数
+	VECTOR PunchPos;
+
 
 public:
 
@@ -146,6 +148,13 @@ public:
 	//当たり判定(Y方向)
 	void PulsY(int PosY, float Height);
 
+
+	//弾関連関数----------------------
+	//弾の最大数取得
+	int GetBulletMaxNum()
+	{
+		return BULLET_MAX_NUM;
+	}
 	//弾の発射間隔調整
 	void BulletCount();
 
@@ -155,105 +164,22 @@ public:
 	//弾の移動
 	void MoveBullet();
 
-	//アイテムを拾う処理
-	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
-
-	//アイテムを投げる処理
-	void ThrowItem(VECTOR ItemPos);
-
-	//アニメーション切り替え処理
-	void PlayerAnimetion();
-
-	//勝利フラグ(プレイヤー1)設定
-	bool GetPlayer1Win()
-	{
-		return IsPlayer1Win;
-	}
-	//勝利フラグ(プレイヤー2)設定
-	bool GetPlayer2Win()
-	{
-		return IsPlayer2Win;
-	}
-	//勝利フラグ(CPU)設定
-	bool GetCPUWin()
-	{
-		return IsCPUWin;
-	}
-
-	//勝利フラグ(プレイヤー1)設定
-	void SetPlayer1Win()
-	{
-		 IsPlayer1Win = true;
-	}
-	//勝利フラグ(プレイヤー2)設定
-	void SetPlayer2Win()
-	{
-		 IsPlayer2Win = true;
-	}
-	//勝利フラグ(CPU)設定
-	void SetCPUWin()
-	{
-		 IsCPUWin = true;
-	}
-
-
-	//弾の最大数取得
-	int GetBulletMaxNum()
-	{
-		return BULLET_MAX_NUM;
-	}
-
-	//プレイヤーの座標設定
-	void SetPlayerPos(VECTOR Position)
-	{
-		NextPos = Position;
-	}
-	//X座標設定
-	void SetPlayerPosX(float Position)
-	{
-		NextPos.x = Position;
-	}
-	//Y座標設定
-	void SetPlayerPosY(float Position)
-	{
-		NextPos.y = Position;
-	}
-	//プレイヤーの座標取得
-	VECTOR GetPlayerPos()
-	{
-		return Pos1;
-	}
-
-	VECTOR GetPlayerSize()
-	{
-		return PlayerSize;
-	}
-
 	//弾の座標取得
-	VECTOR GetBulletPos()
+	VECTOR GetBulletPos(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return bulletInfo[i].BulletPos1;
-		}
+		return bulletInfo[i].BulletPos1;
 	}
 
 	//弾の使用フラグ取得
-	bool GetBulletIsUse()
+	bool GetBulletIsUse(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return bulletInfo[i].IsUse;
-		}
+		return bulletInfo[i].IsUse;
 	}
 
 	//弾の使用フラグ設定
-	void SetBulletIsUse()
+	void SetBulletIsUse(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			bulletInfo[i].IsUse = false;
-		}	
+		bulletInfo[i].IsUse = false;
 	}
 
 	//弾の横サイズ取得
@@ -267,7 +193,9 @@ public:
 	{
 		return BulletDamege;
 	}
+	//------------------------------------
 
+	//HP関連------------------------------
 	//プレイヤーのHP取得
 	int GetHP()
 	{
@@ -302,7 +230,54 @@ public:
 	{
 		DamageCoolTime += AddTime;
 	}
+	//-------------------------------------
 
+
+
+	//アイテムを拾う処理
+	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
+
+	//アイテムを投げる処理
+	void ThrowItem(VECTOR ItemPos);
+
+
+
+
+
+	//アニメーション切り替え処理
+	void PlayerAnimetion();
+
+
+	
+
+	//プレイヤーの座標設定
+	void SetPlayerPos(VECTOR Position)
+	{
+		NextPos = Position;
+	}
+	//X座標設定
+	void SetPlayerPosX(float Position)
+	{
+		NextPos.x = Position;
+	}
+	//Y座標設定
+	void SetPlayerPosY(float Position)
+	{
+		NextPos.y = Position;
+	}
+	//プレイヤーの座標取得(原点が中心座標)
+	VECTOR GetPlayerPos()
+	{
+		return Pos;
+	}
+	//プレイヤーのサイズ取得
+	VECTOR GetPlayerSize()
+	{
+		return PlayerSize;
+	}
+
+	
+	
 	
 	DIR GetPlayerdir()
 	{
@@ -325,7 +300,7 @@ public:
 	//プレイヤーの進んでいる方向をチェック
 	void GetMoveDirection(bool* _dirArray);
 
-	//通常のプレイヤー座標を取得
+	//通常のプレイヤー座標を取得(原点が左上座標)
 	VECTOR GetNormalPlayerPos()
 	{
 		return Pos1;

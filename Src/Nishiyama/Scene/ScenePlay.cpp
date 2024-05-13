@@ -55,44 +55,63 @@ void ScenePlay::Step()
 	MapCollision();
 
 	//近接攻撃の当たり判定
+	//プレイヤー1の当たり判定(プレイヤー2がダメージを受ける)
+	if (player[0].GetDamegeCoolTime() >= 30)
+	{
+		if (Collision::IsHitRectNormal)
+		{
+
+		}
+	}
+	//プレイヤー2の当たり判定(プレイヤー1がダメージを受ける)
+	if (player[1].GetDamegeCoolTime() >= 30)
+	{
+
+	}
 	
 	//弾の当たり判定--------------------------------------------------------------
 	//プレイヤー1の弾の当たり判定(プレイヤー2がダメージを受ける)
 	if (player[0].GetDamegeCoolTime() >= 30)
 	{
-		if (player[0].GetBulletIsUse() == true)
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-
-			if (Collision::IsHitRect(player[0].GetBulletPos(), player[1].GetPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+			if (player[0].GetBulletIsUse(i) == true)
 			{
-				//プレイヤー2にダメージを与える
-				player[1].Damege(player[0].GetBulletDamege());
-				//ダメージクールタイムを0にする
-				player[1].SetDamageCoolTime();
-				//弾の使用フラグをfalseにする
-				player[0].SetBulletIsUse();
+				if (Collision::IsHitRect(player[0].GetBulletPos(i), player[1].GetNormalPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+				{
+					//プレイヤー2にダメージを与える
+					player[1].Damege(player[0].GetBulletDamege());
+					//ダメージクールタイムを0にする
+					player[1].SetDamageCoolTime();
+					//弾の使用フラグをfalseにする
+					player[0].SetBulletIsUse(i);
+				}
 			}
-		}
+		}	
 	}
+
 	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
 	if (player[1].GetDamegeCoolTime() >= 30)
 	{
-		if (player[1].GetBulletIsUse() == true)
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-			if (Collision::IsHitRect(player[1].GetBulletPos(), player[0].GetPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+			if (player[1].GetBulletIsUse(i) == true)
 			{
-				//プレイヤー1にダメージを与える
-				player[0].Damege(player[1].GetBulletDamege());
-				//ダメージクールタイムを0にする
-				player[0].SetDamageCoolTime();
-				//弾の使用フラグをfalseにする
-				player[1].SetBulletIsUse();
+				if (Collision::IsHitRect(player[1].GetBulletPos(i), player[0].GetNormalPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+				{
+					//プレイヤー1にダメージを与える
+					player[0].Damege(player[1].GetBulletDamege());
+					//ダメージクールタイムを0にする
+					player[0].SetDamageCoolTime();
+					//弾の使用フラグをfalseにする
+					player[1].SetBulletIsUse(i);
+				}
 			}
 		}
 	}
 	//---------------------------------------------------------------------------
 
-	for (int Number = 1; Number < 3; Number++)
+	for (int Number = 0; Number < 2; Number++)
 	{
 		if (player[Number].GetDamegeCoolTime() <= 30)
 		{

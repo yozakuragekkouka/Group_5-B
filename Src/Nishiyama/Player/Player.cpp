@@ -202,7 +202,7 @@ void PLAYER::Draw(int playerNumber)
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
 
-	if (IsGet == true)
+	/*if (IsGet == true)
 	{
 		DrawString(0, 100, "Player1アイテムを持っている", GetColor(255, 255, 255));
 		if (Input::IsKeyPush(ActionButton[5]))
@@ -213,9 +213,19 @@ void PLAYER::Draw(int playerNumber)
 	else
 	{
 		DrawString(0, 100, "Player1アイテムを持っていない", GetColor(255, 255, 255));
-	}
-
+	}*/
+	//プレイヤーの当たり判定
 	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
+	
+	//近接攻撃の当たり判定
+	if (dir == IsRight)
+	{
+		DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), true);
+	}
+	if (dir == IsLeft)
+	{
+		DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), true);
+	}
 }
 
 //後処理

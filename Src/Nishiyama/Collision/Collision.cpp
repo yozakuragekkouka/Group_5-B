@@ -32,3 +32,29 @@ bool Collision::IsHitCircle(VECTOR Circle1_Pos, VECTOR Circle2_Pos, float Circle
 		return false;
 	}
 }
+
+//VECTOR‚ðŽg‚í‚È‚¢‚Ù‚¤
+bool Collision::IsHitRectNormal(int myPos_X, int myPos_Y, int side, int Vertical,
+	int pos_1X, int pos_1Y, int Rectside, int RectVertical)
+{
+	if (myPos_X < pos_1X + Rectside &&
+		myPos_X + side > pos_1X &&
+		myPos_Y + Vertical > pos_1Y &&
+		myPos_Y < pos_1Y + RectVertical)
+		return true;
+	else
+		return false;
+}
+
+//VECTOR‚ðŽg‚í‚È‚¢‚Ù‚¤
+bool Collision::IsHitCircleNormal(int PosX, int PosY, int circle1, int aPosX, int aPosY, int circle2)
+{
+	if ((circle1 + circle2) * (circle1 + circle2) >
+		(aPosX - PosX) * (aPosX - PosX) + (aPosY - PosY) * (aPosY - PosY))
+	{
+		return true;
+	}
+	else
+		return false;
+}
+
