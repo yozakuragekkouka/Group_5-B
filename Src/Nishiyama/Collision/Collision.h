@@ -12,9 +12,9 @@ public:
 
 
 	//IsHitRectのプロトタイプ宣言
-	bool IsHitRectNormal(int myPos_X, int myPos_Y, int side, int Vertical,
+	static bool IsHitRectNormal(int myPos_X, int myPos_Y, int side, int Vertical,
 		int pos_1X, int pos_1Y, int Rectside, int RectVertical);
 
 	//IsHitCircleのプロトタイプ宣言
-	bool IsHitCircleNormal(int PosX, int PosY, int circle1, int aPosX, int aPosY, int circle2);
+	static bool IsHitCircleNormal(int PosX, int PosY, int circle1, int aPosX, int aPosY, int circle2);
 };

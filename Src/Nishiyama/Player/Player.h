@@ -15,9 +15,9 @@
 #define JUMPMAX_NUM			(2)
 #define SPEED				(4.0f)
 
-#define BULLET_MAX_NUM		(3)
+#define BULLET_MAX_NUM		(2)
 #define BULLET_ANIME_NUM	(24)
-#define SHOT_INTERVAL		(100)
+#define SHOT_INTERVAL		(20)
 
 extern bool IsPlayer1Win;
 extern bool	IsPlayer2Win;
@@ -64,9 +64,6 @@ protected:
 	//プレイヤーのライフ
 	int Life;
 	int DamageCoolTime;
-
-	//近接攻撃の攻撃力
-	int closeAttackDm;
 
 	//方向を決める変数
 	DIR dir;
@@ -115,10 +112,11 @@ protected:
 	int LoopCount;
 
 	//アクションボタン
-	int ActionButton[6];
+	int ActionButton[5];
 
 	//近接攻撃に使う変数
-	VECTOR PunchPos;
+	int PunchPosX;
+	int PunchPosY;
 
 
 public:
@@ -139,17 +137,18 @@ public:
 	void Move();
 	//ジャンプ処理
 	void Jump();
+
+	//アニメーション関連---------------------------
+	//アニメーション切り替え処理
+	void PlayerAnimetion();
 	//ダッシュ時のアニメ切り替え処理
 	void DushAnime();
 	//ジャンプ時のアニメ切り替え処理
 	void JumpAnime();
-	//当たり判定(X方向)
-	void PulsX(int PosX, float Width);
-	//当たり判定(Y方向)
-	void PulsY(int PosY, float Height);
+	//---------------------------------------------
 
 
-	//弾関連関数----------------------
+	//弾関連関数-----------------------------------
 	//弾の最大数取得
 	int GetBulletMaxNum()
 	{
@@ -193,9 +192,9 @@ public:
 	{
 		return BulletDamege;
 	}
-	//------------------------------------
+	//--------------------------------------------
 
-	//HP関連------------------------------
+	//HP関連--------------------------------------
 	//プレイヤーのHP取得
 	int GetHP()
 	{
@@ -230,9 +229,7 @@ public:
 	{
 		DamageCoolTime += AddTime;
 	}
-	//-------------------------------------
-
-
+	//---------------------------------------------
 
 	//アイテムを拾う処理
 	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
@@ -242,12 +239,10 @@ public:
 
 
 
-
-
-	//アニメーション切り替え処理
-	void PlayerAnimetion();
-
-
+	//当たり判定(X方向)
+	void PulsX(int PosX, float Width);
+	//当たり判定(Y方向)
+	void PulsY(int PosY, float Height);
 	
 
 	//プレイヤーの座標設定
@@ -270,14 +265,28 @@ public:
 	{
 		return Pos;
 	}
+
+	//ボタンの取得
+	int GetBottan()
+	{
+		return ActionButton[4];
+	}
+	//近距離攻撃座標取得
+	int GetPunchPosX()
+	{
+		return PunchPosX;
+	}
+	//近距離攻撃座標取得
+	int GetPunchPosY()
+	{
+		return PunchPosY;
+	}
+
 	//プレイヤーのサイズ取得
 	VECTOR GetPlayerSize()
 	{
 		return PlayerSize;
 	}
-
-	
-	
 	
 	DIR GetPlayerdir()
 	{

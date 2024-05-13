@@ -16,13 +16,9 @@ void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 
-	flameCount = 0;
+	flameCount = 20;
 	AnimeNum = 0;
 	PlayerSize = { 64.0f, 64.0f, 0.0f };
-	
-
-	//近接攻撃の攻撃力
-	closeAttackDm = 10;
 
 	//アイテムフラグ
 	IsGet = false;
@@ -59,7 +55,6 @@ void PLAYER::Init(int playerNumber)
 	ActionButton[2] = KEY_INPUT_D;		//右移動
 	ActionButton[3] = KEY_INPUT_SPACE;	//発射ボタン
 	ActionButton[4] = KEY_INPUT_E;		//近距離攻撃
-	ActionButton[5] = KEY_INPUT_F;		//アイテム攻撃
 
 	if(playerNumber == 2)
 	{
@@ -75,11 +70,13 @@ void PLAYER::Init(int playerNumber)
 		ActionButton[2] = KEY_INPUT_RIGHT;		//右移動
 		ActionButton[3] = KEY_INPUT_RSHIFT;		//発射ボタン
 		ActionButton[4] = KEY_INPUT_RCONTROL;	//近距離攻撃
-		ActionButton[5] = KEY_INPUT_M;			//アイテム攻撃
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
 	Pos = { 0.0f, 0.0f, 0.0f };
+	PunchPosX = 0;
+	PunchPosY = 0;
+
 	Life = 100;
 	DamageCoolTime = 30;
 }
@@ -103,6 +100,8 @@ void PLAYER::Step()
 {
 	flameCount++;
 	OldPos = Pos;
+	PunchPosX = Pos.x;
+	PunchPosY = Pos.y;
 	Pos = NextPos;
 
 	if (!IsGround)Gravity = 0.5f;
@@ -118,9 +117,6 @@ void PLAYER::Step()
 		bulletInfo[i].BulletPos1.y = bulletInfo[i].BulletPos.y - 40.0f;
 	}
 
-
-
-
 	//移動処理
 	Move();
 
@@ -135,9 +131,6 @@ void PLAYER::Step()
 	NextPos.y += YSpeed;
 	YSpeed += Gravity;
 
-	//弾の発射間隔調整
-	BulletCount();
-
 	//弾の発射処理
 	if (Input::IsKeyPush(ActionButton[3]))
 	{
@@ -145,21 +138,9 @@ void PLAYER::Step()
 		ActionStateID = State_Atack;
 		BulletShot();
 	}
+
 	//弾の移動
 	MoveBullet();
-
-	//アイテム処理
-	/*if (Input::IsKeyPush(ActionButton[5]))
-	{
-		if (!IsGet)
-		{
-			GetItem();
-		}
-		else
-		{
-			ThrowItem();
-		}
-	}*/
 
 	//移動制限
 	LimitX_Y();
@@ -202,29 +183,17 @@ void PLAYER::Draw(int playerNumber)
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
 
-	/*if (IsGet == true)
-	{
-		DrawString(0, 100, "Player1アイテムを持っている", GetColor(255, 255, 255));
-		if (Input::IsKeyPush(ActionButton[5]))
-		{
-			DrawString(0, 115, "Player1アイテムを投げた", GetColor(255, 255, 255));
-		}
-	}
-	else
-	{
-		DrawString(0, 100, "Player1アイテムを持っていない", GetColor(255, 255, 255));
-	}*/
 	//プレイヤーの当たり判定
 	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
-	
+
 	//近接攻撃の当たり判定
 	if (dir == IsRight)
 	{
-		DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), true);
+		DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), false);
 	}
 	if (dir == IsLeft)
 	{
-		DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), true);
+		DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), false);
 	}
 }
 
