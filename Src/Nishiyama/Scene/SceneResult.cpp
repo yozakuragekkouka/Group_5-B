@@ -3,7 +3,7 @@
 #include "../Input/Input.h"
 #include "SceneResult.h"
 
-bool Win1P = false;
+
 
 //クリア初期化
 void SceneResult::Init()
@@ -21,6 +21,11 @@ void SceneResult::Init()
 
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
+
+	Win1P_x = 630;
+	Win1P_y = 250;
+	Win2P_x = 630;
+	Win2P_y = 250;
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_RESULT;
 }
@@ -60,23 +65,15 @@ void SceneResult::Draw()
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
 
-	////1Pが2Pに勝った時の描画
-	//if(//PlaySceneでフラグがtrue)
-	//	{
-	//		DrawGraph(650, 500, Win1P_Hndl, true);
-	//	}
-	//else
-	//{
-	//	DrawGraph(650, 500, Win2P_Hndl, true);
-	//}
-	////1PがCPUに勝った時の描画
-	//else if(//1PのHP > CPUのHP　|| CPUのHP == 0)
-	//{
-	//	DrawGraph(650, 500, Win1P_Hndl, true);
-	//	}
-	//else {
-	//	DrawGraph(650, 500, WinCPU_Hndl, true);
-	//}
+	if (Player.GetPlayer1Win())
+	{
+		DrawRotaGraph(Win1P_x, Win1P_y, 0.7, 0.0, Win1P_Hndl, true);
+	}
+	if (Player.GetPlayer2Win())
+	{
+		DrawRotaGraph(Win2P_x, Win2P_y, 0.7, 0.0, Win2P_Hndl, true);
+	}
+	
 }
 
 //クリア後処理

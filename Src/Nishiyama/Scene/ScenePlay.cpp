@@ -107,6 +107,14 @@ void ScenePlay::Step()
 		{
 			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
 		}
+		if (player[1].GetHP() <= 0)
+		{
+			player[1].SetPlayer1Win();
+		}
+		if (player[0].GetHP() <= 0)
+		{
+			player[0].SetPlayer2Win();
+		}
 	}
 }
 

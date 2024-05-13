@@ -23,6 +23,13 @@ void SceneTitle::Init()
 	Playbutton_Hndl = LoadGraph(BUTTON_PATH);
 	TitleName_Hndl = LoadGraph(TITLE_NAME_PATH);
 
+	bgm_Hndl = LoadSoundMem(BGM_PATH);
+	Se_Hndl = LoadSoundMem(SE_S_PATH);
+	Se2_Hndl = LoadSoundMem(SE_D_PATH);
+
+	//ã»ÇÃå¯â âπ
+	PlaySoundMem(bgm_Hndl, DX_PLAYTYPE_LOOP, true);
+
 	Play_Hndl = LoadGraph(PLAY_PATH);
 	Play2_Hndl = LoadGraph(PLAY2_PATH);
 
@@ -55,12 +62,14 @@ void SceneTitle::Step()
 	{
 		nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 		SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_TITLE;
+		PlaySoundMem(Se2_Hndl, DX_PLAYTYPE_BACK, true);
 	}
 	
 	if (Input::IsKeyPush(KEY_INPUT_UP))
 	{
 		arrow_y = 450;
 		PlayNumber = 1;
+		PlaySoundMem(Se_Hndl, DX_PLAYTYPE_BACK, true);
 	}
 
 	if (Input::IsKeyPush(KEY_INPUT_DOWN))
@@ -68,6 +77,7 @@ void SceneTitle::Step()
 		arrow_y = 600;
 
 		PlayNumber = 2;
+		PlaySoundMem(Se_Hndl, DX_PLAYTYPE_BACK, true);
 	}
 
 	//îwåià⁄ìÆèàóù
@@ -111,6 +121,8 @@ void SceneTitle::Draw()
 //É^ÉCÉgÉãå„èàóù
 void SceneTitle::Fin()
 {
-
+	DeleteSoundMem(bgm_Hndl);
+	DeleteSoundMem(Se_Hndl);
+	DeleteSoundMem(Se2_Hndl);
 	SceneManager::g_CurrenySceneID = nextScene;
 }

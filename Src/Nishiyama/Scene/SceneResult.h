@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "../Player/Player.h"
 
 
 #define RESULT_BG_PATH		"Data/Result/Result.png"
@@ -11,6 +12,8 @@
 class SceneResult : public SceneBase
 {
 private:
+
+	PLAYER Player;
 	//”wŒi‚ÌƒOƒ[ƒoƒ‹•Ï”
 	int BackGround_handle[1] = { 0 };
 	int bgSkyX[1] = { 0 };
@@ -19,11 +22,10 @@ private:
 	int bgSkyX1[1] = { 0 };
 
 	int Win1P_Hndl;
+	int Win1P_x, Win1P_y;
 	int Win2P_Hndl;
+	int Win2P_x, Win2P_y;
 	int WinCPU_Hndl;
-
-	bool Win1P;
-	bool Win2P;
 
 public:
 	void Init();
@@ -34,5 +36,3 @@ public:
 
 	void Fin();
 };
-
-extern bool Win1P;

@@ -171,7 +171,7 @@ public:
 		return IsPlayer1Win;
 	}
 	//勝利フラグ(プレイヤー2)設定
-	bool GetPlayer1Win()
+	bool GetPlayer2Win()
 	{
 		return IsPlayer2Win;
 	}
@@ -187,7 +187,7 @@ public:
 		 IsPlayer1Win = true;
 	}
 	//勝利フラグ(プレイヤー2)設定
-	void SetPlayer1Win()
+	void SetPlayer2Win()
 	{
 		 IsPlayer2Win = true;
 	}
