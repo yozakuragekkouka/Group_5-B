@@ -15,9 +15,14 @@ void SceneResult::Init()
 		BackGround_handle2[i] = LoadGraph(RESULT_BG2_PATH);
 	}
 
-	Win1P_Hndl = LoadGraph(PLAYER1WIN_PATH);
 	Win2P_Hndl = LoadGraph(PLAYER2WIN_PATH);
+	Win1P_Hndl = LoadGraph(PLAYER1WIN_PATH);
 	WinCPU_Hndl = LoadGraph(CPUWIN_PATH);
+
+	BGM_Hndl = LoadSoundMem(BGM_PATH);
+
+	//ã»ÇÃå¯â âπ
+	PlaySoundMem(BGM_Hndl, DX_PLAYTYPE_LOOP, true);
 
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
@@ -26,6 +31,8 @@ void SceneResult::Init()
 	Win1P_y = 250;
 	Win2P_x = 630;
 	Win2P_y = 250;
+	WinCPU_x = 630;
+	WinCPU_y = 250;
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_RESULT;
 }
@@ -73,13 +80,17 @@ void SceneResult::Draw()
 	{
 		DrawRotaGraph(Win2P_x, Win2P_y, 0.7, 0.0, Win2P_Hndl, true);
 	}
+	if (IsCPUWin == true)
+	{
+		DrawRotaGraph(WinCPU_x, WinCPU_y, 0.7, 0.0, WinCPU_Hndl, true);
+	}
 	
 }
 
 //ÉNÉäÉAå„èàóù
 void SceneResult::Fin()
 {
-
+	DeleteSoundMem(BGM_Hndl);
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;
 
 }

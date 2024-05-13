@@ -9,6 +9,7 @@
 #define PLAYER2WIN_PATH		"Data/Result/2Pwin.png"
 #define CPUWIN_PATH			"Data/Result/CPUwin.png"
 
+#define BGM_PATH		"Data/BGM/Result.mp3"
 class SceneResult : public SceneBase
 {
 private:
@@ -26,7 +27,9 @@ private:
 	int Win2P_Hndl;
 	int Win2P_x, Win2P_y;
 	int WinCPU_Hndl;
+	int WinCPU_x, WinCPU_y;
 
+	int BGM_Hndl;
 public:
 	void Init();
 

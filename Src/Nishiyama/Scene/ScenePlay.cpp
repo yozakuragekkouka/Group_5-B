@@ -32,6 +32,12 @@ void ScenePlay::Init()
 		player[1].SetPlayerPos(Player2Pos);
 		player[1].Load();
 	}
+
+	playBgm_Hndl = LoadSoundMem(PLAYBGM_PATH);
+
+	//‹È‚ÌŒø‰Ê‰¹
+	PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
@@ -160,6 +166,8 @@ void ScenePlay::Fin()
 	//‰œ‘º
 	delete CMap;
 	CMap = nullptr;
+
+	DeleteSoundMem(playBgm_Hndl);
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }

@@ -3,6 +3,8 @@
 #include "../BackGround/BackGround.h"
 #include "../Player/Player.h"
 #include "../DefaultMap/DefaultMap.h"
+
+#define PLAYBGM_PATH		"Data/BGM/êÌì¨BGM.wav"
 class ScenePlay : public SceneBase
 {
 private:
@@ -13,6 +15,8 @@ private:
 	const VECTOR Player2Pos = { 1248.0f, 500.0f, 0.0f };
 
 	_Map* CMap;
+
+	int playBgm_Hndl;
 
 public:
 	void Init();
