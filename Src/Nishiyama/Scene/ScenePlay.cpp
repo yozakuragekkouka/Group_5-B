@@ -104,6 +104,9 @@ void ScenePlay::Step()
 	{
 		if (player[0].GetHP() <= 0)
 		{
+			IsPlayer1Win = false;
+			IsPlayer2Win = false;
+			IsCPUWin = true;
 			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
 		}
 	}
