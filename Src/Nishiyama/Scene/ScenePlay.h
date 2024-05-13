@@ -7,6 +7,7 @@
 #include "../NumberFont/NumberFontData.h"
 
 #define PLAYBGM_PATH		"Data/BGM/êÌì¨BGM.wav"
+#define HITSE_PATH		"Data/SE/damage.mp3"
 
 class ScenePlay : public SceneBase
 {
@@ -21,6 +22,7 @@ private:
 
 	int playBgm_Hndl;
 
+	int HitSe_Hndl;
 public:
 	void Init();
 	void Step();

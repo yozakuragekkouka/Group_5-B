@@ -40,9 +40,9 @@ void ScenePlay::Init()
 	LoadEffect(EFFECT_TYPE_HIT, 2);
 
 	playBgm_Hndl = LoadSoundMem(PLAYBGM_PATH);
-
+	HitSe_Hndl = LoadSoundMem(HITSE_PATH);
 	//‹È‚ÌŒø‰Ê‰¹
-	//PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
+	PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
@@ -80,6 +80,7 @@ void ScenePlay::Step()
 						PlayEffect(EFFECT_TYPE_HIT, 
 							player[1].GetNormalPlayerPos().x, 
 							player[1].GetNormalPlayerPos().y);
+						PlaySoundMem(HitSe_Hndl, DX_PLAYTYPE_BACK, true);
 
 						player[1].Damege(10);
 					}
@@ -96,6 +97,8 @@ void ScenePlay::Step()
 						PlayEffect(EFFECT_TYPE_HIT, 
 							player[1].GetNormalPlayerPos().x, 
 							player[1].GetNormalPlayerPos().y);
+						PlaySoundMem(HitSe_Hndl, DX_PLAYTYPE_BACK, true);
+
 						player[1].Damege(10);
 					}
 				}
@@ -117,6 +120,8 @@ void ScenePlay::Step()
 						PlayEffect(EFFECT_TYPE_HIT, 
 							player[0].GetNormalPlayerPos().x, 
 							player[0].GetNormalPlayerPos().y);
+						PlaySoundMem(HitSe_Hndl, DX_PLAYTYPE_BACK, true);
+
 						player[0].Damege(10);
 					}
 				}
@@ -132,6 +137,8 @@ void ScenePlay::Step()
 						PlayEffect(EFFECT_TYPE_HIT, 
 							player[0].GetNormalPlayerPos().x,
 							player[0].GetNormalPlayerPos().y);
+						PlaySoundMem(HitSe_Hndl, DX_PLAYTYPE_BACK, true);
+
 						player[0].Damege(10);
 					}
 				}
@@ -278,6 +285,8 @@ void ScenePlay::Fin()
 	FinEffect();
 
 	DeleteSoundMem(playBgm_Hndl);
+	DeleteSoundMem(HitSe_Hndl);
+
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }

@@ -12,7 +12,7 @@
 
 #define BGM_PATH		"Data/BGM/タイトル.mp3"
 #define SE_S_PATH		"Data/SE/カーソル移動5.mp3"
-#define SE_D_PATH		"Data/SE/決定ボタンを押す43.mp3"
+#define SE_D_PATH		"Data/SE/決定ボタンを押す18.mp3"
 
 //シーン情報
 class SceneTitle : public SceneBase
