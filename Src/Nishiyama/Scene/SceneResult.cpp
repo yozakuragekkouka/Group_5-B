@@ -3,7 +3,7 @@
 #include "../Input/Input.h"
 #include "SceneResult.h"
 
-bool Win1P = false;
+
 
 //クリア初期化
 void SceneResult::Init()
@@ -15,12 +15,24 @@ void SceneResult::Init()
 		BackGround_handle2[i] = LoadGraph(RESULT_BG2_PATH);
 	}
 
-	Win1P_Hndl = LoadGraph(PLAYER1WIN_PATH);
 	Win2P_Hndl = LoadGraph(PLAYER2WIN_PATH);
+	Win1P_Hndl = LoadGraph(PLAYER1WIN_PATH);
 	WinCPU_Hndl = LoadGraph(CPUWIN_PATH);
+
+	BGM_Hndl = LoadSoundMem(BGM_PATH);
+
+	//曲の効果音
+	PlaySoundMem(BGM_Hndl, DX_PLAYTYPE_LOOP, true);
 
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
+
+	Win1P_x = 630;
+	Win1P_y = 250;
+	Win2P_x = 630;
+	Win2P_y = 250;
+	WinCPU_x = 630;
+	WinCPU_y = 250;
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_RESULT;
 }
@@ -60,27 +72,25 @@ void SceneResult::Draw()
 		DrawGraph(bgSkyX1[i], 0, BackGround_handle2[i], true);
 	}
 
-	////1Pが2Pに勝った時の描画
-	//if(//PlaySceneでフラグがtrue)
-	//	{
-	//		DrawGraph(650, 500, Win1P_Hndl, true);
-	//	}
-	//else
-	//{
-	//	DrawGraph(650, 500, Win2P_Hndl, true);
-	//}
-	////1PがCPUに勝った時の描画
-	//else if(//1PのHP > CPUのHP　|| CPUのHP == 0)
-	//{
-	//	DrawGraph(650, 500, Win1P_Hndl, true);
-	//	}
-	//else {
-	//	DrawGraph(650, 500, WinCPU_Hndl, true);
-	//}
+	if (IsPlayer1Win == true)
+	{
+		DrawRotaGraph(Win1P_x, Win1P_y, 0.7, 0.0, Win1P_Hndl, true);
+	}
+	if (IsPlayer2Win == true)
+	{
+		DrawRotaGraph(Win2P_x, Win2P_y, 0.7, 0.0, Win2P_Hndl, true);
+	}
+	if (IsCPUWin == true)
+	{
+		DrawRotaGraph(WinCPU_x, WinCPU_y, 0.7, 0.0, WinCPU_Hndl, true);
+	}
+	
 }
 
 //クリア後処理
 void SceneResult::Fin()
 {
+	DeleteSoundMem(BGM_Hndl);
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;
+
 }

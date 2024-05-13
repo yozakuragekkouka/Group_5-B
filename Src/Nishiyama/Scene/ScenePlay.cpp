@@ -7,9 +7,9 @@
 #include "SceneTitle.h"
 #include "../Collision/Collision.h"
 
-//奥村
-#include"../DefaultMap/DefaultMap.h"
-_Map* CMap;
+
+
+
 
 //プレイシーン初期化
 void ScenePlay::Init()
@@ -32,6 +32,12 @@ void ScenePlay::Init()
 		player[1].SetPlayerPos(Player2Pos);
 		player[1].Load();
 	}
+
+	playBgm_Hndl = LoadSoundMem(PLAYBGM_PATH);
+
+	//曲の効果音
+	//PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
@@ -45,57 +51,128 @@ void ScenePlay::Step()
 	{
 		player[1].Step();
 	}
-	//近接攻撃の当たり判定
+	//マップとの当たり判定
+	MapCollision();
+
 	
+	//近接攻撃の当たり判定
+	if (Input::IsKeyPush(player[0].GetBottan()))
+	{
+		//左
+		if (player[0].GetPlayerdir() == 0)
+		{
+			//プレイヤー1の当たり判定(プレイヤー2がダメージを受ける)
+			if (player[0].GetDamegeCoolTime() >= 30)
+			{
+				if (Collision::IsHitRectNormal(player[0].GetPunchPosX() - 64, player[0].GetPunchPosY() - 32, 32, 64,
+					player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
+				{
+					player[1].Damege(10);
+				}
+			}
+		}
+		//右
+		if (player[0].GetPlayerdir() == 1)
+		{
+			if (player[0].GetDamegeCoolTime() >= 30)
+			{
+				if (Collision::IsHitRectNormal(player[0].GetPunchPosX() + 32, player[0].GetPunchPosY() - 32, 32, 64,
+					player[1].GetPunchPosX() - 32, player[1].GetPunchPosY() - 32, 64, 64))
+				{
+					player[1].Damege(10);
+				}
+			}
+		}
+		
+	}
+	//近接攻撃の当たり判定
+	if (Input::IsKeyPush(player[1].GetBottan()))
+	{
+		//プレイヤー2の当たり判定(プレイヤー1がダメージを受ける)
+		if (player[1].GetPlayerdir() == 0)
+		{
+			if (player[1].GetDamegeCoolTime() >= 30)
+			{
+				if (Collision::IsHitRectNormal(player[1].GetPunchPosX() - 64, player[1].GetPunchPosY() - 32, 32, 64,
+					player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
+				{
+					player[0].Damege(10);
+				}
+			}
+		}
+		//右
+		if (player[1].GetPlayerdir() == 1)
+		{
+			if (player[1].GetDamegeCoolTime() >= 30)
+			{
+				if (Collision::IsHitRectNormal(player[1].GetPunchPosX() + 32, player[1].GetPunchPosY() - 32, 32, 64,
+					player[0].GetPunchPosX() - 32, player[0].GetPunchPosY() - 32, 64, 64))
+				{
+					player[0].Damege(10);
+				}
+			}
+		}
+	}
+
 	//弾の当たり判定--------------------------------------------------------------
 	//プレイヤー1の弾の当たり判定(プレイヤー2がダメージを受ける)
 	if (player[0].GetDamegeCoolTime() >= 30)
 	{
-		if (player[0].GetBulletIsUse() == true)
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-
-			if (Collision::IsHitRect(player[0].GetBulletPos(), player[1].GetPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+			if (player[0].GetBulletIsUse(i) == true)
 			{
-				//プレイヤー2にダメージを与える
-				player[1].Damege(player[0].GetBulletDamege());
-				//ダメージクールタイムを0にする
-				player[1].SetDamageCoolTime();
-				//弾の使用フラグをfalseにする
-				player[0].SetBulletIsUse();
+				if (Collision::IsHitRect(player[0].GetBulletPos(i), player[1].GetNormalPlayerPos(), player[0].GetBulletSize(), player[1].GetPlayerSize()))
+				{
+					//プレイヤー2にダメージを与える
+					player[1].Damege(player[0].GetBulletDamege());
+					//ダメージクールタイムを0にする
+					player[1].SetDamageCoolTime();
+					//弾の使用フラグをfalseにする
+					player[0].SetBulletIsUse(i);
+				}
 			}
-		}
+		}	
 	}
-	
+
+	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
 	if (player[1].GetDamegeCoolTime() >= 30)
 	{
-		//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
-		if (player[1].GetBulletIsUse() == true)
+		for (int i = 0; i < BULLET_MAX_NUM; i++)
 		{
-			if (Collision::IsHitRect(player[1].GetBulletPos(), player[0].GetPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+			if (player[1].GetBulletIsUse(i) == true)
 			{
-				//プレイヤー1にダメージを与える
-				player[0].Damege(player[1].GetBulletDamege());
-				//ダメージクールタイムを0にする
-				player[0].SetDamageCoolTime();
-				//弾の使用フラグをfalseにする
-				player[1].SetBulletIsUse();
+				if (Collision::IsHitRect(player[1].GetBulletPos(i), player[0].GetNormalPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
+				{
+					//プレイヤー1にダメージを与える
+					player[0].Damege(player[1].GetBulletDamege());
+					//ダメージクールタイムを0にする
+					player[0].SetDamageCoolTime();
+					//弾の使用フラグをfalseにする
+					player[1].SetBulletIsUse(i);
+				}
 			}
 		}
 	}
-	//---------------------------------------------------------------------------
 
-	for (int Number = 1; Number < 3; Number++)
+	//ダメージクールタイムを加算
+	for (int Number = 0; Number < 2; Number++)
 	{
 		if (player[Number].GetDamegeCoolTime() <= 30)
 		{
 			player[Number].AddDamageCoolTime(1);
 		}
 	}
-
+	//---------------------------------------------------------------------------
+	
+	//終了処理-------------------------------------------------------------------
 	if (PlayNumber == 1)
 	{
 		if (player[0].GetHP() <= 0)
 		{
+			IsPlayer1Win = false;
+			IsPlayer2Win = false;
+			IsCPUWin = true;
 			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
 		}
 	}
@@ -105,7 +182,22 @@ void ScenePlay::Step()
 		{
 			SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_FIN_PLAY;
 		}
+		//プレイヤー2のHPがなくなったとき
+		if (player[1].GetHP() <= 0)
+		{
+			IsPlayer1Win = true;
+			IsPlayer2Win = false;
+			IsCPUWin = false;
+		}
+		//プレイヤー1のHPがなくなったとき
+		if (player[0].GetHP() <= 0)
+		{
+			IsPlayer2Win = true;
+			IsPlayer1Win = false;
+			IsCPUWin = false;
+		}
 	}
+	//-----------------------------------------------------------------------
 }
 
 //プレイシーン描画処理
@@ -145,21 +237,45 @@ void ScenePlay::Fin()
 	delete CMap;
 	CMap = nullptr;
 
+	DeleteSoundMem(playBgm_Hndl);
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }
 
+//奥村
+// マップの当たり判定
+void ScenePlay::MapCollision() {
+	for (int index = 0; index < PlayNumber; index++) {
+		CheckCollision(index, true);  // Y方向の当たり判定
+		CheckCollision(index, false); // X方向の当たり判定
+	}
+}
 
+void ScenePlay::CheckCollision(int index, bool checkY) {
+	DrawFormatString(0, 300, GetColor(255, 255, 255), "%f", player[0].GetNextPos().y);
+	for (int mapIndexY = 0; mapIndexY < MAP_DATA_Y; mapIndexY++) {
+		for (int mapIndexX = 0; mapIndexX < MAP_DATA_X; mapIndexX++) {
+			if (CMap->m_MapData[mapIndexY][mapIndexX] == 0) continue;
 
-//弾の当たり判定
-//Posで指定したプレイヤーが攻撃を食らうようにしてます
-//第6引数はダメージを受ける方のプレイヤー配列番号(0か1)
-//第7引数はダメージを与える方のプレイヤー配列番号(0か1)
-void ScenePlay::IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum)
-{
-	//弾とプレイヤーの当たり判定をとる
-	if (Collision::IsHitRect(BulletPos, BulletSize, Pos, PosSize))
-	{
-		player[take_damageNum].Damege(Damage);
-		player[deal_damageNum].SetBulletIsUse();
+			bool dirArray[4] = { false, false, false, false };
+			player[index].GetMoveDirection(dirArray);
+
+			VECTOR A = { player[index].GetNormalPlayerPos().x,player[index].GetNormalPlayerPos().y ,0 };
+			VECTOR Asize = { player[index].GetPlayerSize().x ,player[index].GetPlayerSize().y ,0};
+
+			VECTOR B = { (mapIndexX * MAP_SIZE)+ MAP_SIZE , (mapIndexY * MAP_SIZE) + MAP_SIZE ,0 };
+			VECTOR Bsize = { MAP_SIZE ,MAP_SIZE ,0 };
+
+			if (checkY) {
+				A.y = player[index].GetNextPos().y;
+			}
+			else {
+				A.x = player[index].GetNextPos().x;
+			}
+			if (Collision::IsHitRect(A, B, Asize, Bsize)) {
+				DrawFormatString(0, 400, GetColor(255, 255, 255), "%f", B.x);
+				player[index].HandleCollision(index, dirArray, A, B, Asize, Bsize, checkY);
+			}
+		}
 	}
 }

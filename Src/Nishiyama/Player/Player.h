@@ -15,9 +15,13 @@
 #define JUMPMAX_NUM			(2)
 #define SPEED				(4.0f)
 
-#define BULLET_MAX_NUM		(3)
+#define BULLET_MAX_NUM		(2)
 #define BULLET_ANIME_NUM	(24)
-#define SHOT_INTERVAL		(100)
+#define SHOT_INTERVAL		(20)
+
+extern bool IsPlayer1Win;
+extern bool	IsPlayer2Win;
+extern bool IsCPUWin;
 
 struct Hundle
 {
@@ -61,12 +65,10 @@ protected:
 	int Life;
 	int DamageCoolTime;
 
-	//近接攻撃の攻撃力
-	int closeAttackDm;
-
 	//方向を決める変数
 	DIR dir;
 	VECTOR Pos;
+	VECTOR NextPos; //次のフレームのプレイヤー座標
 	VECTOR Pos1;	//左端を原点にするためだけの変数
 	VECTOR OldPos;
 
@@ -76,7 +78,7 @@ protected:
 	//ジャンプに使う変数
 	float YSpeed;
 	float Gravity;
-	int JunpCount;
+	int JumpCount;
 
 	//弾に使う変数
 	struct BulletInfo
@@ -89,8 +91,6 @@ protected:
 		bool BulletReturn;
 		int BulletAnimeIndex;
 		float Speed;
-		
-		
 	};
 	int BulletDamege;
 	VECTOR BulletSize;		//弾画像のサイズ
@@ -106,12 +106,18 @@ protected:
 	bool IsReturn;
 	bool IsJump;
 	bool IsGround;
+	bool IsAttack;
 
 	int flameCount;
 	int LoopCount;
 
 	//アクションボタン
-	int ActionButton[6];
+	int ActionButton[5];
+
+	//近接攻撃に使う変数
+	int PunchPosX;
+	int PunchPosY;
+
 
 public:
 
@@ -131,15 +137,23 @@ public:
 	void Move();
 	//ジャンプ処理
 	void Jump();
+
+	//アニメーション関連---------------------------
+	//アニメーション切り替え処理
+	void PlayerAnimetion();
 	//ダッシュ時のアニメ切り替え処理
 	void DushAnime();
 	//ジャンプ時のアニメ切り替え処理
 	void JumpAnime();
-	//当たり判定(X方向)
-	void PulsX(int PosX, float Width);
-	//当たり判定(Y方向)
-	void PulsY(int PosY, float Height);
+	//---------------------------------------------
 
+
+	//弾関連関数-----------------------------------
+	//弾の最大数取得
+	int GetBulletMaxNum()
+	{
+		return BULLET_MAX_NUM;
+	}
 	//弾の発射間隔調整
 	void BulletCount();
 
@@ -149,63 +163,22 @@ public:
 	//弾の移動
 	void MoveBullet();
 
-	//アイテムを拾う処理
-	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
-
-	//アイテムを投げる処理
-	void ThrowItem(VECTOR ItemPos);
-
-	//アニメーション切り替え処理
-	void PlayerAnimetion();
-
-	//弾の最大数取得
-	int GetBulletMaxNum()
-	{
-		return BULLET_MAX_NUM;
-	}
-
-	//プレイヤーの座標設定
-	void SetPlayerPos(VECTOR Position)
-	{
-		Pos = Position;
-	}
-
-	//プレイヤーの座標取得
-	VECTOR GetPlayerPos()
-	{
-		return Pos1;
-	}
-
-	VECTOR GetPlayerSize()
-	{
-		return PlayerSize;
-	}
-
 	//弾の座標取得
-	VECTOR GetBulletPos()
+	VECTOR GetBulletPos(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return bulletInfo[i].BulletPos1;
-		}
+		return bulletInfo[i].BulletPos1;
 	}
 
 	//弾の使用フラグ取得
-	bool GetBulletIsUse()
+	bool GetBulletIsUse(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			return bulletInfo[i].IsUse;
-		}
+		return bulletInfo[i].IsUse;
 	}
 
 	//弾の使用フラグ設定
-	void SetBulletIsUse()
+	void SetBulletIsUse(int i)
 	{
-		for (int i = 0; i < BULLET_MAX_NUM; i++)
-		{
-			bulletInfo[i].IsUse = false;
-		}	
+		bulletInfo[i].IsUse = false;
 	}
 
 	//弾の横サイズ取得
@@ -219,7 +192,9 @@ public:
 	{
 		return BulletDamege;
 	}
+	//--------------------------------------------
 
+	//HP関連--------------------------------------
 	//プレイヤーのHP取得
 	int GetHP()
 	{
@@ -254,5 +229,94 @@ public:
 	{
 		DamageCoolTime += AddTime;
 	}
+	//---------------------------------------------
+
+	//アイテムを拾う処理
+	void GetItem(VECTOR ItemPos, VECTOR ItemSize);
+
+	//アイテムを投げる処理
+	void ThrowItem(VECTOR ItemPos);
+
+
+
+	//当たり判定(X方向)
+	void PulsX(int PosX, float Width);
+	//当たり判定(Y方向)
+	void PulsY(int PosY, float Height);
+	
+
+	//プレイヤーの座標設定
+	void SetPlayerPos(VECTOR Position)
+	{
+		NextPos = Position;
+	}
+	//X座標設定
+	void SetPlayerPosX(float Position)
+	{
+		NextPos.x = Position;
+	}
+	//Y座標設定
+	void SetPlayerPosY(float Position)
+	{
+		NextPos.y = Position;
+	}
+	//プレイヤーの座標取得(原点が中心座標)
+	VECTOR GetPlayerPos()
+	{
+		return Pos;
+	}
+
+	//ボタンの取得
+	int GetBottan()
+	{
+		return ActionButton[4];
+	}
+	//近距離攻撃座標取得
+	int GetPunchPosX()
+	{
+		return PunchPosX;
+	}
+	//近距離攻撃座標取得
+	int GetPunchPosY()
+	{
+		return PunchPosY;
+	}
+
+	//プレイヤーのサイズ取得
+	VECTOR GetPlayerSize()
+	{
+		return PlayerSize;
+	}
+	
+	DIR GetPlayerdir()
+	{
+		return dir;
+	}
+
+	//奥村
+	//次のフレームのプレーヤーの位置を取得
+	VECTOR GetNextPos()
+	{
+		return NextPos;
+	}
+
+	//オブジェクトの上にいるかを取得
+	bool GetIsGround()
+	{
+		return IsGround;
+	}
+
+	//プレイヤーの進んでいる方向をチェック
+	void GetMoveDirection(bool* _dirArray);
+
+	//通常のプレイヤー座標を取得(原点が左上座標)
+	VECTOR GetNormalPlayerPos()
+	{
+		return Pos1;
+	}
+
+	//マップ当たり判定
+	void HandleCollision(int index, bool dirArray[],
+		VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY);
 };
 

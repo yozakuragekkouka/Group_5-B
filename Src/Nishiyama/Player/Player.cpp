@@ -3,21 +3,22 @@
 #include "../Input/Input.h"
 #include "../Collision/Collision.h"
 #include "../../Common.h"
+#include"../DefaultMap/DefaultMap.h"
 
 
+//勝利フラグ
+bool IsPlayer1Win = false;
+bool IsPlayer2Win = false;
+bool IsCPUWin = false;
 
 //初期化
 void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 
-	flameCount = 0;
+	flameCount = 20;
 	AnimeNum = 0;
 	PlayerSize = { 64.0f, 64.0f, 0.0f };
-	
-
-	//近接攻撃の攻撃力
-	closeAttackDm = 10;
 
 	//アイテムフラグ
 	IsGet = false;
@@ -26,11 +27,11 @@ void PLAYER::Init(int playerNumber)
 	dir = IsRight;
 	ActionStateID = State_Normal;
 
-
 	IsJump = false;
 	IsDush = false;
 	IsReturn = true;
 	IsGround = false;
+	IsAttack = false;
 
 	//弾情報関連
 	for (int i = 0; i < BULLET_MAX_NUM; i++)
@@ -46,7 +47,7 @@ void PLAYER::Init(int playerNumber)
 
 	YSpeed = 0.0f;
 	Gravity = 0.5f;
-	JunpCount = 0;
+	JumpCount = 0;
 
 	//プレイヤー１の移動キー
 	ActionButton[0] = KEY_INPUT_W;		//ジャンプ
@@ -54,7 +55,6 @@ void PLAYER::Init(int playerNumber)
 	ActionButton[2] = KEY_INPUT_D;		//右移動
 	ActionButton[3] = KEY_INPUT_SPACE;	//発射ボタン
 	ActionButton[4] = KEY_INPUT_E;		//近距離攻撃
-	ActionButton[5] = KEY_INPUT_F;		//アイテム攻撃
 
 	if(playerNumber == 2)
 	{
@@ -70,10 +70,13 @@ void PLAYER::Init(int playerNumber)
 		ActionButton[2] = KEY_INPUT_RIGHT;		//右移動
 		ActionButton[3] = KEY_INPUT_RSHIFT;		//発射ボタン
 		ActionButton[4] = KEY_INPUT_RCONTROL;	//近距離攻撃
-		ActionButton[5] = KEY_INPUT_M;			//アイテム攻撃
 	}
 
 	OldPos = { 0.0f, 0.0f, 0.0f };
+	Pos = { 0.0f, 0.0f, 0.0f };
+	PunchPosX = 0;
+	PunchPosY = 0;
+
 	Life = 100;
 	DamageCoolTime = 30;
 }
@@ -97,6 +100,12 @@ void PLAYER::Step()
 {
 	flameCount++;
 	OldPos = Pos;
+	PunchPosX = Pos.x;
+	PunchPosY = Pos.y;
+	Pos = NextPos;
+
+	if (!IsGround)Gravity = 0.5f;
+	else Gravity = 0.0f;
 
 	//原点を左上にする
 	Pos1.x = Pos.x - 32.0f;
@@ -107,9 +116,6 @@ void PLAYER::Step()
 		bulletInfo[i].BulletPos1.x = bulletInfo[i].BulletPos.x - 80.0f;
 		bulletInfo[i].BulletPos1.y = bulletInfo[i].BulletPos.y - 40.0f;
 	}
-
-
-	IsGround = false;
 
 	//移動処理
 	Move();
@@ -122,32 +128,19 @@ void PLAYER::Step()
 		ActionStateID = Stete_Jump;
 		Jump();
 	}
-	Pos.y += YSpeed;
+	NextPos.y += YSpeed;
 	YSpeed += Gravity;
-
-	//弾の発射間隔調整
-	BulletCount();
 
 	//弾の発射処理
 	if (Input::IsKeyPush(ActionButton[3]))
 	{
+		IsAttack = true;
+		ActionStateID = State_Atack;
 		BulletShot();
 	}
+
 	//弾の移動
 	MoveBullet();
-
-	//アイテム処理
-	/*if (Input::IsKeyPush(ActionButton[5]))
-	{
-		if (!IsGet)
-		{
-			GetItem();
-		}
-		else
-		{
-			ThrowItem();
-		}
-	}*/
 
 	//移動制限
 	LimitX_Y();
@@ -186,24 +179,22 @@ void PLAYER::Draw(int playerNumber)
 	}
 	
 	//デバック
-	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JunpCount);
+	DrawFormatString(0, 15, GetColor(255, 255, 255), "ジャンプカウント:%d", JumpCount);
 	DrawFormatString(0, 55, GetColor(255, 255, 255), "X座標:%f", Pos.x);
 	DrawFormatString(0, 70, GetColor(255, 255, 255), "Y座標:%f", Pos.y);
 
-	if (IsGet == true)
-	{
-		DrawString(0, 100, "Player1アイテムを持っている", GetColor(255, 255, 255));
-		if (Input::IsKeyPush(ActionButton[5]))
-		{
-			DrawString(0, 115, "Player1アイテムを投げた", GetColor(255, 255, 255));
-		}
-	}
-	else
-	{
-		DrawString(0, 100, "Player1アイテムを持っていない", GetColor(255, 255, 255));
-	}
-
+	//プレイヤーの当たり判定
 	DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);
+
+	//近接攻撃の当たり判定
+	if (dir == IsRight)
+	{
+		DrawBox((int)Pos.x + 32, (int)Pos.y - 32, (int)Pos.x + 64, (int)Pos.y + 32, GetColor(255, 255, 0), false);
+	}
+	if (dir == IsLeft)
+	{
+		DrawBox((int)Pos.x - 64, (int)Pos.y - 32, (int)Pos.x - 32, (int)Pos.y + 32, GetColor(255, 255, 0), false);
+	}
 }
 
 //後処理
@@ -216,23 +207,24 @@ void PLAYER::Delete()
 void PLAYER::LimitX_Y()
 {
 	//X座標制限
-	if (Pos.x + PlayerSize.x / 2 >= SCREEN_SIZE_X)
+	if (NextPos.x + PlayerSize.x / 2 >= SCREEN_SIZE_X)
 	{
-		Pos.x = SCREEN_SIZE_X - PlayerSize.x / 2;
+		NextPos.x = SCREEN_SIZE_X - PlayerSize.x / 2;
 	}
-	else if (Pos.x - PlayerSize.x / 2 < 0.0f)
+	else if (NextPos.x - PlayerSize.x / 2 < 0.0f)
 	{
-		Pos.x = PlayerSize.x / 2;
+		NextPos.x = PlayerSize.x / 2;
 	}
 
 	//Y座標制限
 	//
-	if (Pos.y + PlayerSize.y / 2 >= SCREEN_SIZE_Y)
+	if (NextPos.y + PlayerSize.y / 2 >= SCREEN_SIZE_Y)
 	{
 		YSpeed = 0.0f;
-		Pos.y = SCREEN_SIZE_Y - PlayerSize.y / 2;
-		JunpCount = 0;
+		NextPos.y = SCREEN_SIZE_Y - PlayerSize.y / 2;
+		JumpCount = 0;
 		IsJump = false;
+		IsGround = true;
 
 		if (IsDush == false)
 		{
@@ -240,11 +232,12 @@ void PLAYER::LimitX_Y()
 		}
 
 	}
-	else if (Pos.y - PlayerSize.y / 2 < 0.0f)
+	else if (NextPos.y - PlayerSize.y / 2 < 0.0f)
 	{
-		Pos.y = PlayerSize.y / 2;
+		NextPos.y = PlayerSize.y / 2;
 		YSpeed = 0.0f;
 	}
+	else IsGround = false;
 }
 
 //移動処理
@@ -259,7 +252,7 @@ void PLAYER::Move()
 		IsDush = true;
 		dir = IsRight;
 		IsReturn = true;
-		Pos.x += SPEED;
+		NextPos.x += SPEED;
 	}
 	else if (Input::IsKeyKeep(ActionButton[1]))
 	{	
@@ -270,7 +263,7 @@ void PLAYER::Move()
 		IsDush = true;
 		dir = IsLeft;
 		IsReturn = false;
-		Pos.x -= SPEED;
+		NextPos.x -= SPEED;
 	}
 	else
 	{
@@ -281,26 +274,30 @@ void PLAYER::Move()
 //ジャンプ処理
 void PLAYER::Jump()
 {
-	if (JunpCount < JUMPMAX_NUM)
+	if (JumpCount < JUMPMAX_NUM)
 	{
 		YSpeed = -15.0f;
-		JunpCount++;
+		JumpCount++;
 	}
 }
 
 //ダッシュアニメ
 void PLAYER::DushAnime()
 {
-	if (flameCount % 4 == 0)
+	if (Input::IsKeyKeep(ActionButton[2]) || Input::IsKeyKeep(ActionButton[1]))
 	{
-		AnimeNum++;
-		if (AnimeNum == 6)
+		if (flameCount % 4 == 0)
 		{
-		AnimeNum = 0;
+			AnimeNum++;
+			if (AnimeNum == 6)
+			{
+				AnimeNum = 0;
+			}
 		}
 	}
 }
 
+//ジャンプアニメ
 void PLAYER::JumpAnime()
 {
 	//降下中
@@ -343,7 +340,7 @@ void PLAYER::PulsY(int PosY, float Height)
 		puls = (Pos.y + 32.0f) - PosY;
 		Pos.y -= puls;
 		YSpeed = 0.0f;
-		JunpCount = 0;
+		JumpCount = 0;
 		IsJump = false;
 
 	}
@@ -384,7 +381,7 @@ void PLAYER::PlayerAnimetion()
 		{
 			AnimeNum = 0;
 		}
-		if (IsJump == false)
+		if (IsJump == false || IsAttack == false)
 		{
 			//ダッシュ
 			DushAnime();
@@ -392,17 +389,20 @@ void PLAYER::PlayerAnimetion()
 
 		break;
 	case Stete_Jump:
-		//ジャンプ
 		if (IsJump == true)
 		{
+			//ジャンプ
 			JumpAnime();
 		}
 
 		break;
 
 	case State_Atack:
-		//攻撃中
-
+		if (IsAttack == true)
+		{
+			//攻撃中
+			AnimeNum = 12;
+		}
 
 	default:
 		break;
@@ -486,7 +486,7 @@ void PLAYER::MoveBullet()
 void PLAYER::GetItem(VECTOR ItemPos, VECTOR ItemSize)
 {
 	//当たり判定をとる
-	if (Collision::IsHitRect(Pos, ItemPos, PlayerSize, ItemSize))
+	if (Collision::IsHitRect(Pos1, ItemPos, PlayerSize, ItemSize))
 	{
 		//当たったらアイテムをプレイヤーの腕付近に配置する
 		ItemPos = Pos;
@@ -502,5 +502,79 @@ void PLAYER::ThrowItem(VECTOR ItemPos)
 	if (IsGet == true)
 	{
 		IsGet = false;
+	}
+}
+
+
+
+// 進んでいる方向をチェック
+// 上下左右の順になっている
+void PLAYER::GetMoveDirection(bool* _dirArray) {
+	// 右方向のチェック
+	if (NextPos.x > Pos.x) {
+		_dirArray[3] = true;
+		DrawFormatString(300, 0, GetColor(255, 255, 255), "右");
+	}
+
+	// 左方向のチェック
+	if (NextPos.x < Pos.x) {
+		_dirArray[2] = true;
+		DrawFormatString(300, 17, GetColor(255, 255, 255), "左");
+
+	}
+	// 下方向のチェック
+	if (NextPos.y > Pos.y) {
+		_dirArray[1] = true;
+		DrawFormatString(300, 34, GetColor(255, 255, 255), "下");
+
+	}
+
+	// 上方向のチェック
+	if (NextPos.y < Pos.y) {
+		_dirArray[0] = true;
+		DrawFormatString(300, 51, GetColor(255, 255, 255), "上");
+
+	}
+}
+
+void PLAYER::HandleCollision(int index, bool dirArray[],
+	VECTOR A, VECTOR B, VECTOR Asize, VECTOR Bsize, bool checkY) {
+	if (checkY) {
+		if (dirArray[0]) {
+			// 上方向に移動中に下のオブジェクトと衝突した場合
+			float overlap = (B.y + Bsize.y) - A.y;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+			// めり込んだ分だけプレイヤーの位置を上に戻す
+			SetPlayerPosY(A.y + overlap);
+		}
+		if (dirArray[1]) {
+			// 下方向に移動中に上のオブジェクトと衝突した場合
+			float overlap = (A.y + Asize.y) - B.y;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+			// めり込んだ分だけプレイヤーの位置を下に戻す
+			SetPlayerPosY(A.y - overlap);
+			IsGround = true;
+			IsJump = false;
+			JumpCount = 0;
+		}
+		else IsGround = false;
+	}
+	else {
+		if (dirArray[2]) {
+			// 左方向に移動中に右のオブジェクトと衝突した場合
+			float overlap = (B.x + Bsize.x) - A.x;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+
+			// めり込んだ分だけプレイヤーの位置を左に戻す
+			SetPlayerPosX(A.x + overlap);
+		}
+		if (dirArray[3]) {
+			// 右方向に移動中に左のオブジェクトと衝突した場合
+			float overlap = (A.x + Asize.x) - B.x;
+			DrawFormatString(0, 317, GetColor(255, 255, 255), "%f", overlap);
+
+			// めり込んだ分だけプレイヤーの位置を右に戻す
+			SetPlayerPosX(A.x - overlap);
+		}
 	}
 }

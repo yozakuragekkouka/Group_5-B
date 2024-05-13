@@ -2,7 +2,9 @@
 #include "Scene.h"
 #include "../BackGround/BackGround.h"
 #include "../Player/Player.h"
+#include "../DefaultMap/DefaultMap.h"
 
+#define PLAYBGM_PATH		"Data/BGM/戦闘BGM.wav"
 class ScenePlay : public SceneBase
 {
 private:
@@ -12,7 +14,9 @@ private:
 	const VECTOR Player1Pos = { 32.0f, 500.0f, 0.0f };
 	const VECTOR Player2Pos = { 1248.0f, 500.0f, 0.0f };
 
+	_Map* CMap;
 
+	int playBgm_Hndl;
 
 public:
 	void Init();
@@ -21,28 +25,10 @@ public:
 	void Fin();
 
 	//奥村
-	struct MAPCollision
-	{
-		// マップの当たり判定
-		void MapCollision(int num);
+	//マップ当たり判定の総合
+	void MapCollision();
 
-		void CheckDirectionalCollision(int num, bool checkY);
-
-		void HandleCollision(int num, int mapIndexY, int mapIndexX,
-			bool dirArray[], int Ax, int Ay, int Aw, int Ah,
-			int Bx, int By, int Bw, int Bh, bool checkY);
-
-		void HandleDiagonalCollision(int num, int Ax, int Ay, int Aw, int Ah,
-			int Bx, int By, int Bw, int Bh);
-
-		bool IsDiagonalCollision(int Ax, int Ay, int Aw, int Ah,
-			int Bx, int By, int Bw, int Bh);
-
-
-	};
-
-	//宮近
-	//弾の当たり判定
-	//引数1が攻撃を食らうようにしてます
-	void IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum);
+	//マップとプレイヤーの当たり判定の情報を
+	// GetIsGroundとGetMoveDirectionに渡す
+	void CheckCollision(int index, bool checkY);
 };

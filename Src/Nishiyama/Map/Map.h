@@ -8,15 +8,15 @@ private:
 	int mapImage[(int)MAPCHIP_KIND::KindNum];
 	MapData data;
 	
-	const int gimmick_Num;
+	int gimmick_Num;
 	GimmickID* gimmickID;
 	GimmickBase** gimmick;
 
 public:
-	Map(int AllGimmickNum);
+	Map();
 	~Map();
 
-	void Init();
+	void Init(bool isEdit, int MapID);
 	void Step();
 	void Draw();
 	void Fin();

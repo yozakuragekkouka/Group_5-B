@@ -10,6 +10,10 @@
 #define PLAY2_PATH		"Data/Title/2人でPLay.png"
 #define ARROW_PATH		"Data/Title/arrow.png"
 
+#define BGM_PATH		"Data/BGM/タイトル.mp3"
+#define SE_S_PATH		"Data/SE/カーソル移動5.mp3"
+#define SE_D_PATH		"Data/SE/決定ボタンを押す43.mp3"
+
 //シーン情報
 class SceneTitle : public SceneBase
 {
@@ -33,6 +37,10 @@ private:
 
 	int arrow_Hndl;
 	int arrow_x, arrow_y;
+
+	int bgm_Hndl;
+	int Se_Hndl;
+	int Se2_Hndl;
 
 	SCENEID nextScene;
 
