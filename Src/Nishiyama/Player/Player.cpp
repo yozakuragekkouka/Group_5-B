@@ -26,11 +26,16 @@ void PLAYER::Init(int playerNumber)
 	dir = IsRight;
 	ActionStateID = State_Normal;
 
+	//勝利フラグ
+	IsPlayer1Win = false;
+	IsPlayer2Win = false;
+	IsCPUWin = false;
 
 	IsJump = false;
 	IsDush = false;
 	IsReturn = true;
 	IsGround = false;
+	IsAttack = false;
 
 	//弾情報関連
 	for (int i = 0; i < BULLET_MAX_NUM; i++)
@@ -136,6 +141,8 @@ void PLAYER::Step()
 	//弾の発射処理
 	if (Input::IsKeyPush(ActionButton[3]))
 	{
+		IsAttack = true;
+		ActionStateID = State_Atack;
 		BulletShot();
 	}
 	//弾の移動
@@ -298,16 +305,20 @@ void PLAYER::Jump()
 //ダッシュアニメ
 void PLAYER::DushAnime()
 {
-	if (flameCount % 4 == 0)
+	if (Input::IsKeyKeep(ActionButton[2]) || Input::IsKeyKeep(ActionButton[1]))
 	{
-		AnimeNum++;
-		if (AnimeNum == 6)
+		if (flameCount % 4 == 0)
 		{
-		AnimeNum = 0;
+			AnimeNum++;
+			if (AnimeNum == 6)
+			{
+				AnimeNum = 0;
+			}
 		}
 	}
 }
 
+//ジャンプアニメ
 void PLAYER::JumpAnime()
 {
 	//降下中
@@ -391,7 +402,7 @@ void PLAYER::PlayerAnimetion()
 		{
 			AnimeNum = 0;
 		}
-		if (IsJump == false)
+		if (IsJump == false || IsAttack == false)
 		{
 			//ダッシュ
 			DushAnime();
@@ -399,17 +410,20 @@ void PLAYER::PlayerAnimetion()
 
 		break;
 	case Stete_Jump:
-		//ジャンプ
 		if (IsJump == true)
 		{
+			//ジャンプ
 			JumpAnime();
 		}
 
 		break;
 
 	case State_Atack:
-		//攻撃中
-
+		if (IsAttack == true)
+		{
+			//攻撃中
+			AnimeNum = 12;
+		}
 
 	default:
 		break;
@@ -493,7 +507,7 @@ void PLAYER::MoveBullet()
 void PLAYER::GetItem(VECTOR ItemPos, VECTOR ItemSize)
 {
 	//当たり判定をとる
-	if (Collision::IsHitRect(Pos, ItemPos, PlayerSize, ItemSize))
+	if (Collision::IsHitRect(Pos1, ItemPos, PlayerSize, ItemSize))
 	{
 		//当たったらアイテムをプレイヤーの腕付近に配置する
 		ItemPos = Pos;

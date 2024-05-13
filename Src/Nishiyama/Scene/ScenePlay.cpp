@@ -68,10 +68,9 @@ void ScenePlay::Step()
 			}
 		}
 	}
-	
+	//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
 	if (player[1].GetDamegeCoolTime() >= 30)
 	{
-		//プレイヤー2の弾の当たり判定(プレイヤー1がダメージを受ける)
 		if (player[1].GetBulletIsUse() == true)
 		{
 			if (Collision::IsHitRect(player[1].GetBulletPos(), player[0].GetPlayerPos(), player[1].GetBulletSize(), player[0].GetPlayerSize()))
@@ -150,23 +149,6 @@ void ScenePlay::Fin()
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }
-
-
-
-//弾の当たり判定
-//Posで指定したプレイヤーが攻撃を食らうようにしてます
-//第6引数はダメージを受ける方のプレイヤー配列番号(0か1)
-//第7引数はダメージを与える方のプレイヤー配列番号(0か1)
-void ScenePlay::IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum)
-{
-	//弾とプレイヤーの当たり判定をとる
-	if (Collision::IsHitRect(BulletPos, BulletSize, Pos, PosSize))
-	{
-		player[take_damageNum].Damege(Damage);
-		player[deal_damageNum].SetBulletIsUse();
-	}
-}
-
 
 //奥村
 // マップの当たり判定

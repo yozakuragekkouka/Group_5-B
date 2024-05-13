@@ -27,9 +27,4 @@ public:
 	//マップとプレイヤーの当たり判定の情報を
 	// GetIsGroundとGetMoveDirectionに渡す
 	void CheckCollision(int index, bool checkY);
-
-	//宮近
-	//弾の当たり判定
-	//引数1が攻撃を食らうようにしてます
-	void IsHitBullet(VECTOR BulletPos, VECTOR BulletSize, VECTOR Pos, VECTOR PosSize, int Damage, int take_damageNum, int deal_damageNum);
 };
