@@ -6,13 +6,18 @@
 #include "../NumberFont/NumberFont.h"
 #include "../NumberFont/NumberFontData.h"
 
+#include "../Map/Map.h"
+
 #define PLAYBGM_PATH		"Data/BGM/êÌì¨BGM.wav"
 #define HITSE_PATH		"Data/SE/damage.mp3"
 
 class ScenePlay : public SceneBase
 {
 private:
-	BackGround bg;
+	BackGround bg1;
+	BackGround bg2;
+	BackGround bg3;
+
 	PLAYER *player;
 
 	const VECTOR Player1Pos = { 32.0f, 500.0f, 0.0f };
@@ -23,6 +28,13 @@ private:
 	int playBgm_Hndl;
 
 	int HitSe_Hndl;
+
+	bool MapDrawFlag;
+	int isEdit;
+	int currentMapID;
+
+	Map map[2][5];
+
 public:
 	void Init();
 	void Step();

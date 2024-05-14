@@ -14,8 +14,9 @@
 //プレイシーン初期化
 void ScenePlay::Init()
 {
-	bg.Init(BackGroundKind::BUILDING);
-
+	bg1.Init(BackGroundKind::SKY);
+	bg2.Init(BackGroundKind::CLOUD);
+	bg3.Init(BackGroundKind::BUILDING);
 
 	player = new PLAYER[2];
 
@@ -45,13 +46,28 @@ void ScenePlay::Init()
 	//曲の効果音
 	PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
 
+
+	MapDrawFlag = false;
+	isEdit = 0;
+	currentMapID = 0;
+
+	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
+	{
+		for (int mapID = 0; mapID < 5; mapID++)
+		{
+			map[Ori_or_Edi][mapID].Init((bool)Ori_or_Edi, mapID);
+		}
+	}
+
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
 
 //プレイシーン通常処理
 void ScenePlay::Step()
 {
-	bg.Step();
+	bg1.Step();
+	bg2.Step();
+	bg3.Step();
 
 	player[0].Step();
 	if (PlayNumber == 2)
@@ -63,6 +79,34 @@ void ScenePlay::Step()
 
 
 	StepEffect();
+
+	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
+	{
+		for (int mapID = 0; mapID < 5; mapID++)
+		{
+			map[Ori_or_Edi][mapID].Step();
+		}
+	}
+
+	if (Input::IsKeyPush(KEY_INPUT_I))
+	{
+		MapDrawFlag = !MapDrawFlag;
+	}
+	if (MapDrawFlag)
+	{
+		if (Input::IsKeyPush(KEY_INPUT_O))
+		{
+			isEdit++;
+			if (isEdit > 1)
+				isEdit = 0;
+		}
+		if (Input::IsKeyPush(KEY_INPUT_P))
+		{
+			currentMapID++;
+			if (currentMapID > 4)
+				currentMapID = 0;
+		}
+	}
 
 	if (PlayNumber == 2)
 	{
@@ -246,10 +290,20 @@ void ScenePlay::Step()
 //プレイシーン描画処理
 void ScenePlay::Draw()
 {
-	bg.Draw();
+	bg1.Draw();
+	bg2.Draw();
+	bg3.Draw();
 
 	//奥村
-	CMap->Draw();
+	if (MapDrawFlag == false)
+	{
+		CMap->Draw();
+	}
+	else
+	{
+		map[isEdit][currentMapID].Draw();
+	}
+
 	DrawEffect();
 	player[0].Draw(0);
 	if (PlayNumber == 2)
@@ -269,7 +323,10 @@ void ScenePlay::Draw()
 //リトライかどうかを返す
 void ScenePlay::Fin()
 {
-	bg.Fin();
+	bg1.Fin();
+	bg2.Fin();
+	bg3.Fin();
+
 	player[0].Delete();
 	if (PlayNumber == 2)
 	{
@@ -288,6 +345,13 @@ void ScenePlay::Fin()
 	DeleteSoundMem(playBgm_Hndl);
 	DeleteSoundMem(HitSe_Hndl);
 
+	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
+	{
+		for (int mapID = 0; mapID < 5; mapID++)
+		{
+			map[Ori_or_Edi][mapID].Fin();
+		}
+	}
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }
