@@ -17,7 +17,7 @@ void PLAYER::Init(int playerNumber)
 {
 	memset(&hundl, -1, sizeof(Hundle));
 	
-	LifePos = { 300.0f, 500.0f, 0.0f };
+	LifePos = { 320.0f, 32.0f, 0.0f };
 
 	flameCount = 20;
 	AnimeNum = 0;
@@ -62,8 +62,6 @@ void PLAYER::Init(int playerNumber)
 	if(playerNumber == 2)
 	{
 
-		Life = 100;
-
 		dir = IsLeft;
 		IsReturn = false;
 
@@ -74,7 +72,7 @@ void PLAYER::Init(int playerNumber)
 		ActionButton[3] = KEY_INPUT_RSHIFT;		//発射ボタン
 		ActionButton[4] = KEY_INPUT_RCONTROL;	//近距離攻撃
 
-		LifePos = { 00.0f, 500.0f, 0.0f };
+		LifePos = { 960.0f, 32.0f, 0.0f };
 
 	}
 
@@ -83,7 +81,7 @@ void PLAYER::Init(int playerNumber)
 	PunchPosX = 0;
 	PunchPosY = 0;
 
-	Life = 100;
+	Life = 200;
 	DamageCoolTime = 30;
 }
 
@@ -97,6 +95,8 @@ void PLAYER::Load()
 	{
 		LoadDivGraph(BULLETHNDL_PATH, 24, 6, 4, 160, 80, bulletInfo[i].BulletHndl);
 	}
+
+	LoadDivGraph("Data/Image/Number/number16x32_03.png", 10, 10, 1, 16, 32, hundl.HP_Hndl);
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
@@ -184,8 +184,8 @@ void PLAYER::Draw(int playerNumber)
 		}
 	}
 	
-	////数字の描画
-	//DrawNumber(hundl.HP_Hndl[playerNumber], Life, LifePos.x, LifePos.y);
+	//数字の描画
+	DrawNumber(hundl.HP_Hndl, Life, LifePos.x, LifePos.y);
 
 	////プレイヤーの当たり判定
 	//DrawBox((int)Pos.x - 32, (int)Pos.y - 32, (int)Pos.x + 32, (int)Pos.y + 32, GetColor(255, 0, 0), false);

@@ -14,7 +14,8 @@
 //プレイシーン初期化
 void ScenePlay::Init()
 {
-	bg.Init(BackGroundKind::NONE);
+	bg.Init(BackGroundKind::BUILDING);
+
 
 	player = new PLAYER[2];
 

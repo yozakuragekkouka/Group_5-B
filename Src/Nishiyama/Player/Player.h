@@ -26,7 +26,7 @@ extern bool IsCPUWin;
 struct Hundle
 {
 	int PlayerHndl[2][PLAYER_ANIME_NUM];
-	int HP_Hndl[2][10];
+	int HP_Hndl[10];
 };
 
 //•ûŒü
