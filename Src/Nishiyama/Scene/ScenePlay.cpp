@@ -311,10 +311,10 @@ void ScenePlay::Draw()
 		player[1].Draw(1);
 	}
 
-	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤー1の体力：%d", player[0].GetHP());
+	//DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤー1の体力：%d", player[0].GetHP());
 	if (PlayNumber == 2)
 	{
-		DrawFormatString(0, 15, GetColor(255, 255, 255), "プレイヤー2の体力：%d", player[1].GetHP());
+		//DrawFormatString(0, 15, GetColor(255, 255, 255), "プレイヤー2の体力：%d", player[1].GetHP());
 	}
 
 }
@@ -366,7 +366,7 @@ void ScenePlay::MapCollision() {
 }
 
 void ScenePlay::CheckCollision(int index, bool checkY) {
-	DrawFormatString(0, 300, GetColor(255, 255, 255), "%f", player[0].GetNextPos().y);
+	//DrawFormatString(0, 300, GetColor(255, 255, 255), "%f", player[0].GetNextPos().y);
 	for (int mapIndexY = 0; mapIndexY < MAP_DATA_Y; mapIndexY++) {
 		for (int mapIndexX = 0; mapIndexX < MAP_DATA_X; mapIndexX++) {
 			if (CMap->m_MapData[mapIndexY][mapIndexX] == 0) continue;
@@ -387,7 +387,7 @@ void ScenePlay::CheckCollision(int index, bool checkY) {
 				A.x = player[index].GetNextPos().x;
 			}
 			if (Collision::IsHitRect(A, B, Asize, Bsize)) {
-				DrawFormatString(0, 400, GetColor(255, 255, 255), "%f", B.x);
+				//DrawFormatString(0, 400, GetColor(255, 255, 255), "%f", B.x);
 				player[index].HandleCollision(index, dirArray, A, B, Asize, Bsize, checkY);
 			}
 		}
