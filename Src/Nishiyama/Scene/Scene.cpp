@@ -7,6 +7,9 @@
 
 SCENEID SceneManager::SceneManager::g_CurrenySceneID;	//Œ»İ‚ÌƒV[ƒ“ID
 
+int Datakanri::data_oriedi;
+int Datakanri::data_ID;
+
 SceneManager::SceneManager()
 {
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_TITLE;

@@ -46,6 +46,8 @@ void SceneTitle::Init()
 
 	bgSkyX[0] = 0;
 	bgSkyX1[0] = 1280;
+	isEdit = 0;
+	currentMapID = 0;
 
 	nextScene = SCENEID::SCENE_ID_INIT_PLAY;
 }
@@ -53,6 +55,19 @@ void SceneTitle::Init()
 //タイトル通常処理
 void SceneTitle::Step()
 {
+	if (Input::IsKeyPush(KEY_INPUT_O))
+	{
+		isEdit++;
+		if (isEdit > 1)
+			isEdit = 0;
+	}
+	if (Input::IsKeyPush(KEY_INPUT_P))
+	{
+		currentMapID++;
+		if (currentMapID > 4)
+			currentMapID = 0;
+	}
+
 	if (Input::IsKeyPush(KEY_INPUT_BACK))
 	{
 		nextScene = SCENEID::SCENE_ID_INIT_EDITOR;
@@ -116,6 +131,8 @@ void SceneTitle::Draw()
 	DrawGraph(150, 0, TitleName_Hndl, true);
 
 	DrawFormatString(0, 0, GetColor(255, 255, 255), "プレイヤーの人数：%d", PlayNumber);
+
+	DrawFormatString(0, 300, GetColor(255, 255, 255), "%d, %d", isEdit, currentMapID);
 }
 
 //タイトル後処理
@@ -124,5 +141,9 @@ void SceneTitle::Fin()
 	DeleteSoundMem(bgm_Hndl);
 	DeleteSoundMem(Se_Hndl);
 	DeleteSoundMem(Se2_Hndl);
+
+	Datakanri::data_oriedi = isEdit;
+	Datakanri::data_ID = currentMapID;
+
 	SceneManager::g_CurrenySceneID = nextScene;
 }

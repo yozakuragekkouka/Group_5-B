@@ -221,6 +221,9 @@ void Enemy::Draw() {
 		0>m_pos.x &&
 		SCREEN_SIZE_Y<m_pos.y &&
 		0>m_pos.y)
+	{
+
+	}
 		//DrawString(0, 0, "äOÇ…èoÇΩ", GetColor(255, 0, 0));
 	//DrawFormatString(0, 17, GetColor(255, 0, 0), "x=%f\ny=%f", m_pos.x, m_pos.y);
 	//DrawFormatString(0, 51, GetColor(255, 0, 0), "x=%f\ny=%f", m_next_pos.x, m_next_pos.y);

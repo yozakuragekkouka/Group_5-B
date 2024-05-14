@@ -46,18 +46,7 @@ void ScenePlay::Init()
 	//‹È‚ÌŒø‰Ê‰¹
 	PlaySoundMem(playBgm_Hndl, DX_PLAYTYPE_LOOP, true);
 
-
-	MapDrawFlag = false;
-	isEdit = 0;
-	currentMapID = 0;
-
-	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
-	{
-		for (int mapID = 0; mapID < 5; mapID++)
-		{
-			map[Ori_or_Edi][mapID].Init((bool)Ori_or_Edi, mapID);
-		}
-	}
+	map.Init((bool)Datakanri::data_oriedi, Datakanri::data_ID);
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_LOOP_PLAY;
 }
@@ -80,33 +69,7 @@ void ScenePlay::Step()
 
 	StepEffect();
 
-	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
-	{
-		for (int mapID = 0; mapID < 5; mapID++)
-		{
-			map[Ori_or_Edi][mapID].Step();
-		}
-	}
-
-	if (Input::IsKeyPush(KEY_INPUT_I))
-	{
-		MapDrawFlag = !MapDrawFlag;
-	}
-	if (MapDrawFlag)
-	{
-		if (Input::IsKeyPush(KEY_INPUT_O))
-		{
-			isEdit++;
-			if (isEdit > 1)
-				isEdit = 0;
-		}
-		if (Input::IsKeyPush(KEY_INPUT_P))
-		{
-			currentMapID++;
-			if (currentMapID > 4)
-				currentMapID = 0;
-		}
-	}
+	map.Step();
 
 	if (PlayNumber == 2)
 	{
@@ -294,15 +257,7 @@ void ScenePlay::Draw()
 	bg2.Draw();
 	bg3.Draw();
 
-	//‰œ‘º
-	if (MapDrawFlag == false)
-	{
-		CMap->Draw();
-	}
-	else
-	{
-		map[isEdit][currentMapID].Draw();
-	}
+	map.Draw();
 
 	DrawEffect();
 	player[0].Draw(0);
@@ -345,13 +300,7 @@ void ScenePlay::Fin()
 	DeleteSoundMem(playBgm_Hndl);
 	DeleteSoundMem(HitSe_Hndl);
 
-	for (int Ori_or_Edi = 0; Ori_or_Edi < 2; Ori_or_Edi++)
-	{
-		for (int mapID = 0; mapID < 5; mapID++)
-		{
-			map[Ori_or_Edi][mapID].Fin();
-		}
-	}
+	map.Fin();
 
 	SceneManager::g_CurrenySceneID = SCENEID::SCENE_ID_INIT_RESULT;
 }

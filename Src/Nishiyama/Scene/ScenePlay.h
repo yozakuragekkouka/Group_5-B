@@ -28,12 +28,8 @@ private:
 	int playBgm_Hndl;
 
 	int HitSe_Hndl;
-
-	bool MapDrawFlag;
-	int isEdit;
-	int currentMapID;
-
-	Map map[2][5];
+	
+	Map map;
 
 public:
 	void Init();

@@ -42,6 +42,7 @@ private:
 
 	SceneBase* scene;
 
+
 public:
 	static SCENEID g_CurrenySceneID;	//Œ»İ‚ÌƒV[ƒ“ID
 
@@ -54,4 +55,11 @@ public:
 
 	void SceneFin();
 
+};
+
+class Datakanri
+{
+public:
+	static int data_oriedi;
+	static int data_ID;
 };

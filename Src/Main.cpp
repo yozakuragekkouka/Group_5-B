@@ -33,6 +33,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	SceneManager scene_manager;
 	scene_manager.SceneInit();
 
+	Datakanri::data_oriedi = 0;
+	Datakanri::data_ID = 0;
+
 	//ゲームのメインループ
 	while (ProcessMessage() != -1)
 	{

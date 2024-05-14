@@ -43,6 +43,8 @@ private:
 	int Se2_Hndl;
 
 	SCENEID nextScene;
+	int isEdit;
+	int currentMapID;
 
 public:
 	void Init();
