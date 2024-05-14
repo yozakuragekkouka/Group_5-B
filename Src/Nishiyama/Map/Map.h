@@ -20,4 +20,6 @@ public:
 	void Step();
 	void Draw();
 	void Fin();
+
+	MAPCHIP_KIND GetData(int x, int y) {return data[y][x];}
 };

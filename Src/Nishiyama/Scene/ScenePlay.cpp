@@ -316,17 +316,20 @@ void ScenePlay::MapCollision() {
 
 void ScenePlay::CheckCollision(int index, bool checkY) {
 	//DrawFormatString(0, 300, GetColor(255, 255, 255), "%f", player[0].GetNextPos().y);
-	for (int mapIndexY = 0; mapIndexY < MAP_DATA_Y; mapIndexY++) {
-		for (int mapIndexX = 0; mapIndexX < MAP_DATA_X; mapIndexX++) {
-			if (CMap->m_MapData[mapIndexY][mapIndexX] == 0) continue;
-
+	for (int mapIndexY = 0; mapIndexY < MAPCHIP_NUM_Y; mapIndexY++) {
+		for (int mapIndexX = 0; mapIndexX < MAPCHIP_NUM_X; mapIndexX++) {
+			if (map.GetData(mapIndexX, mapIndexY)==MAPCHIP_KIND::Air) continue;
+			
 			bool dirArray[4] = { false, false, false, false };
 			player[index].GetMoveDirection(dirArray);
 
 			VECTOR A = { player[index].GetNormalPlayerPos().x,player[index].GetNormalPlayerPos().y ,0 };
 			VECTOR Asize = { player[index].GetPlayerSize().x ,player[index].GetPlayerSize().y ,0};
 
-			VECTOR B = { (mapIndexX * MAP_SIZE)+ MAP_SIZE , (mapIndexY * MAP_SIZE) + MAP_SIZE ,0 };
+			int chip_size = (int)((float)MAPCHIP_SIZE * 1.0f);	//マップチップ拡縮
+
+			VECTOR B = { chip_size * -MAPCHIP_OVER + chip_size * (mapIndexX + 1),
+				chip_size * -MAPCHIP_OVER + chip_size * (mapIndexY + 1) ,0 };
 			VECTOR Bsize = { MAP_SIZE ,MAP_SIZE ,0 };
 
 			if (checkY) {
